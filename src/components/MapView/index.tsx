@@ -6,9 +6,10 @@ import Home from '@geoscene/core/widgets/Home'
 interface MapViewProps {
     map: any;
     view?: any;
+    layers?: any;
 }
 
-const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {} }) => {
+const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {} , layers}) => {
     const mapViewRef = useRef<any>(null);
     const mapDivRef = useRef<HTMLDivElement>(null);
 
@@ -33,6 +34,12 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {} }) => {
 
         mapView.ui.remove("attribution")
 
+        Promise.all([
+            mapView.when()
+        ]).then(() => {
+            // 添加图层
+            mapView.map.addMany(layers)
+        })
         // 清理函数
         return () => {
             if (mapViewRef.current) {
