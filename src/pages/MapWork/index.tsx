@@ -37,12 +37,19 @@ const MapWork = () => {
 
     const view = {
         center: [116.805, 28.027], // 经度, 纬度
-        zoom: 5
+        zoom: 4
     };
 
     return (
         <>
-            <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
+            <Sider 
+            collapsible 
+            collapsed={collapsed} 
+            width={250}
+            collapsedWidth={40}
+            onCollapse={(value) => setCollapsed(value)}
+            theme="light"
+            >
                 <MapController />
             </Sider>
             <Layout>

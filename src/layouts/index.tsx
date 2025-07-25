@@ -14,9 +14,19 @@ import { useState } from 'react';
 const { Header } = Layout;
 
 const LayOut = () => {
-  const [theme, setTheme] = useState('light'); // 主题状态
   const [isAIModalVisible, setAIModalVisible] = useState(false); // AI对话框可见状态
+  const [isDarkMode, setIsDarkMode] = useState(false); // 切换暗黑模式
   const navigate = useNavigate();
+  const changeGlobalStyle = () => {
+    //应用主题样式
+
+    const html = document.querySelector('html')
+
+    if (html) {
+      html.style.filter = isDarkMode ? '' : 'brightness(0.88) contrast(0.95) grayscale(0) hue-rotate(180deg) opacity(1) saturate(3) sepia(0.5) invert(1)';
+    }
+    setIsDarkMode(!isDarkMode);
+  };
   const items = [
     {
       label: '地图工作台',
@@ -50,6 +60,7 @@ const LayOut = () => {
           alignItems: 'center',
           height: '100%',
           lineHeight: '35px',
+          background: '#fff'
         }}
       >
         <div style={{ marginRight: 24, display: 'flex', alignItems: 'center' }}>
@@ -57,7 +68,7 @@ const LayOut = () => {
         </div>
         <Menu
           mode="horizontal"
-          theme='dark'
+          theme="light"
           defaultSelectedKeys={['1']}
           items={items}
           style={{ flex: 1, minWidth: 0 }}
@@ -77,6 +88,8 @@ const LayOut = () => {
           <Switch
             checkedChildren={<SunOutlined />}
             unCheckedChildren={<MoonOutlined />}
+            checked={isDarkMode}
+            onChange={changeGlobalStyle}
             size="small"
             style={{
               border: '2px solid #d9d9d9',
@@ -108,15 +121,37 @@ const LayOut = () => {
 
         {/* AI 对话框 */}
         <Modal
-          title="AI 助手"
+          title="GIS网页制图与可视化平台 AI 助手"
           visible={isAIModalVisible}
           onCancel={() => setAIModalVisible(false)}
           footer={null}
-          width={800}
+          width={450}
+          height={600}
+          centered
+          maskClosable={false} // 禁止点击蒙层关闭
+          keyboard={false}     // 禁止按 Esc 键关闭
+          bodyStyle={{
+            padding: '0', // 去除默认内边距，方便自定义内容区域
+            height: '450px',
+          }}
         >
-          <div style={{ height: '500px' }}>
-            {/* 这里放置你的 AI 对话框内容 */}
-            <p>这里是 AI 对话框的内容区域</p>
+          <div
+            style={{
+              height: '100%',
+              padding: '20px',
+              borderRadius: '0 0 12px 12px', // 底部圆角与 Modal 一致
+              overflowY: 'auto', // 允许内容滚动
+            }}
+          >
+            <div style={{
+              borderRadius: '4px',
+              padding: '4px',
+              outline: '2px solid #757982',
+            }}>
+              <p style={{ margin: '0', color: '#555', lineHeight: '1.3' }}>
+                这里是 AI 对话框的内容区域，可以放置聊天记录、输入框等。
+              </p>
+            </div>
           </div>
         </Modal>
 
