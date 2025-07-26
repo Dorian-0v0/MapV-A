@@ -15,9 +15,14 @@
     "@geoscene/core": "^4.29.10",
     "@turf/turf": "^7.2.0",
     "antd": "^5.26.6",
+    "axios": "^1.11.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.7.0"
+    "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.7.0",
+    "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.1",
+    "valtio": "^2.1.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",

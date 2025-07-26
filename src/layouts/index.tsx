@@ -18,14 +18,18 @@ const LayOut = () => {
   const [isDarkMode, setIsDarkMode] = useState(false); // 切换暗黑模式
   const navigate = useNavigate();
   const changeGlobalStyle = () => {
-    //应用主题样式
-
-    const html = document.querySelector('html')
-
-    if (html) {
-      html.style.filter = isDarkMode ? '' : 'brightness(0.88) contrast(0.95) grayscale(0) hue-rotate(180deg) opacity(1) saturate(3) sepia(0.5) invert(1)';
+    const html = document.documentElement;
+  
+  if (html) {
+    // 切换dark mode类而不是直接操作style
+    if (isDarkMode) {
+      html.classList.remove('dark-mode');
+    } else {
+      html.classList.add('dark-mode');
     }
-    setIsDarkMode(!isDarkMode);
+  }
+  
+  setIsDarkMode(!isDarkMode);
   };
   const items = [
     {
@@ -109,6 +113,7 @@ const LayOut = () => {
                 <Menu.Item key="logout">退出登录</Menu.Item>
               </Menu>
             }
+            className='avatarA'
           >
             <Avatar
               style={{
@@ -157,7 +162,7 @@ const LayOut = () => {
 
       </Header>
 
-      <Layout style={{ minHeight: 'calc(100vh - 35px)' }}>
+      <Layout style={{ minHeight: 'calc(100vh - 35px)', backgroundColor: '#e6dfdf' }}>
         <Outlet />
       </Layout>
 

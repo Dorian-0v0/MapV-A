@@ -1,9 +1,22 @@
+import { useState } from 'react';
+
 const MapController = () => {
+    const [isVisible, setIsVisible] = useState(false);
+
     return (
         <div>
-            地图控制台
-        </div>
-    )
-}
+            <button onClick={() => setIsVisible(!isVisible)}>
+                弹出底图Click
+            </button>
 
-export default MapController
+            {/* <div style={{ display: isVisible ? 'block' : 'none' }}>
+                <div id="basemapGalleryContainerRef" />
+                cas
+            </div> */}
+
+            llll
+        </div>
+    );
+};
+
+export default MapController;
