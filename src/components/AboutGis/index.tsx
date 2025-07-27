@@ -50,10 +50,7 @@ const AboutGis = () => {
         </ReactMarkdown>
       </div>
 
-      <div>
-        <div id="basemapGalleryContainerRef" />
-        cas
-      </div>
+   
     </Card >
 
   );
