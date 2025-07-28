@@ -67,19 +67,33 @@ const useMapStore = create((set) => ({
   },
   layers: [
     new GeoJSONLayer({
-      url: 'https://geo.datav.aliyun.com/areas_v3/bound/360900_full.json',
+      url: 'https://geo.datav.aliyun.com/areas_v3/bound/510100_full.json',
+      popupEnabled: true,
       renderer: {
         type: 'simple',
         symbol: {
           type: 'simple-fill',
-          color: [227, 139, 79, 0.5],
+          color: '#13448280',
           outline: {
-            color: [255, 255, 255],
-            width: 1,
+            color: '#ff8080',
+            width: 2,
           },
         },
       },
     }),
+    new GeoJSONLayer({
+      url: './public/矿产.geojson',
+      popupEnabled: true,
+      renderer: {
+        type: 'simple',
+        symbol: {
+          type: 'simple-marker',
+           size: 10,
+          color: '#007eff',  
+          outline: null
+        }
+      }
+    })
   ],
 
 
@@ -105,7 +119,7 @@ const useMapStore = create((set) => ({
 
   updateMapState: (basemap: any) => {
     set({
-      map:{
+      map: {
         basemap,
       }
     });

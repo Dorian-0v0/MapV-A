@@ -9,8 +9,7 @@ import WebTileLayer from "@geoscene/core/layers/WebTileLayer";
 import Home from "@geoscene/core/widgets/Home";
 import useMapStore from '@/store/mapStore'
 import eventBus from '@/utils/eventBus.js';
-import { Button, Card } from 'antd';
-import { CloseOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import Query from '@geoscene/core/rest/support/Query';
 import "./index.less"
 import BaseMapPanel from './BaseMapPanel';
 interface MapViewProps {
@@ -97,14 +96,54 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
                 // 底图控件
 
                 webMap.addMany(layers)
+                layers.forEach(ly => {
+                    mapView.whenLayerView(ly).then(layerView => {
+                        console.log("图层加载成功   ppppp", layerView);
+
+                        ly.popupTemplate = {
+                            title: '{name}',
+                            highlightEable: true,
+                            content: [{
+                                type: "fields",
+                                fieldInfos: (ly.fields || []).map(field => {
+                                    return {
+                                        fieldName: field.name,
+                                        label: field.name,
+                                        visible: true
+                                    };
+                                })
+                            }]
+                        }
+                    });
+                });
+
+
 
                 mapView.ui.add(homeWidget, "top-left")
 
 
 
                 // 注册事件总线要调用的函数
-                eventBus.on('addLayerInWork', async (layer: any) => {
-                    await webMap.add(layer)
+                eventBus.on('addLayerInWork', (layer: any) => {
+                    webMap.add(layer)
+                    mapView.whenLayerView(layer).then(layerView => {
+                        console.log("图层加载成功   ppppp", layerView);
+
+                        layer.popupTemplate = {
+                            title: "{name}",
+                            highlightEable: true,
+                            content: [{
+                                type: "fields",
+                                fieldInfos: (layer.fields || []).map(field => {
+                                    return {
+                                        fieldName: field.name,
+                                        label: field.name,
+                                        visible: true
+                                    };
+                                })
+                            }]
+                        }
+                    });
                     addLayerToMapAndStore(layer)
                     console.log("图层添加成功", layer, layers);
                 });
@@ -116,7 +155,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
         return () => {
             if (mapViewRef.current) {
                 console.log("销毁地图");
-                
+
                 // Get current view state before destroying
                 const center = [mapViewRef.current.center.longitude, mapViewRef.current.center.latitude] as [number, number];
                 const zoom = mapViewRef.current.zoom;
@@ -133,7 +172,36 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
         };
     }, []);
 
+    const QueryBySql1 = () => {
+        console.log("所有字段信息为：", layers[1].fields.slice(1).map(field => field.name));
+        const query = layers[1].createQuery();
+        query.where = "矿产地名称 LIKE '%金矿%'"; // 只用于查询出具体的结果，不会返回到地图上
+        /**
+ * 配置统计分析参数
+ * @param statisticType 统计类型，此处设置为"count"表示进行计数统计
+ * @param onStatisticField 用于统计的字段名称
+ * @param outStatisticFieldName 输出统计结果的字段名称，此处固定为"count"
+ */
+        query.outStatistics = [{
+            statisticType: "count",
+            onStatisticField: '矿产地名称',
+            outStatisticFieldName: "count"
+        }];
+        query.groupByFieldsForStatistics = ['矿产地名称'];
+        layers[1].queryFeatures(query).then(function (result) {
+            const values = result.features.map(feature => feature.attributes['矿产地名称']);
+            console.log('字有唯一值:', values);
+        });
+        layers[1].definitionExpression = "规模 = '小型'";  // definitionExpression = ''   会直接将查询结果返回到layer上
+    };
 
+    const QueryBySql2 = () => {
+        layers[1].definitionExpression = "规模 = '大型'";
+    };
+
+    const QueryBySql3 = () => {
+        layers[1].definitionExpression = "规模 = '中型'";
+    };
     return (
         <div style={{
             height: 'calc(100vh - 35px)',
@@ -155,7 +223,10 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
             {/* 覆盖在地图上的控制容器 */}
 
             <BaseMapPanel></BaseMapPanel>
-        </div>
+            <button onClick={QueryBySql1}>查询1</button>
+            <button onClick={QueryBySql2}>查询2</button>
+            <button onClick={QueryBySql3}>查询3</button>
+        </div >
 
     )
 };

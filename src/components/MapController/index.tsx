@@ -8,7 +8,7 @@ const MapController = () => {
     const { layers } = useMapStore()
     const layer =
         new GeoJSONLayer({
-            url: 'https://geo.datav.aliyun.com/areas_v3/bound/geojson?code=330000_full',
+            url: 'https://geo.datav.aliyun.com/areas_v3/bound/360000_full.json',
             renderer: {
                 type: 'simple',
                 symbol: {
