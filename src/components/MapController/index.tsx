@@ -2,6 +2,7 @@ import { use, useEffect, useState } from 'react';
 import GeoJSONLayer from '@geoscene/core/layers/GeoJSONLayer';
 import eventBus from '@/utils/eventBus.js';
 import useMapStore from '@/store/mapStore';
+import './index.less'
 const MapController = () => {
     const [isBaseMapVisible, setisBaseMapVisible] = useState(false);
 
@@ -34,35 +35,61 @@ const MapController = () => {
             console.log("关闭basemaptable成功", isBaseMapVisible);
         });
         return () => {
-             setisBaseMapVisible(false);
-             console.log('ziid');
-             
+            setisBaseMapVisible(false);
+            console.log('ziid');
+
             eventBus.removeAllListeners();
         };
     }, [])
     return (
-        <div>
-            <button onClick={addlayer}>
-                添加图层
-            </button>
-            <button onClick={() => {
-                 console.log('点击前isBaseMapVisible', isBaseMapVisible);
-                // 获取css id 为 baseMapTable 的table
-                const table = document.getElementById('baseMapTable');
-                // 移除display：none的样式
-                if (table) {
-                    table.style.display = isBaseMapVisible ? 'none' : 'block';
-                }
-                setisBaseMapVisible(!isBaseMapVisible);
-                
-
-            }}>
-                底图
+        <div className='map-controller-button'>
+            <button
+                className='geoscene-icon-collection'
+                onClick={addlayer}
+                title="添加图层">
             </button>
 
-    
+            <button
+                className='geoscene-icon-maps'
+                onClick={() => {
+                    console.log('点击前isBaseMapVisible', isBaseMapVisible);
+                    const table = document.getElementById('baseMapTable');
+                    if (table) {
+                        table.style.display = isBaseMapVisible ? 'none' : 'block';
+                    }
+                    setisBaseMapVisible(!isBaseMapVisible);
+                }}
+                title="设置底图">
+            </button>
 
-            llll
+            <button
+                className='geoscene-icon-cursor-marquee'
+                title="图形绘制">
+            </button>
+
+            <button
+                className='geoscene-icon-filter'
+                title="过滤查询">
+            </button>
+
+            <button
+                className='geoscene-icon-edit'
+                title="要素编辑">
+            </button>
+
+            <button
+                className='geoscene-icon-measure-line'
+                title="测量">
+            </button>
+
+            <button className='geoscene-icon-partly-cloudy' title="区域天气">
+
+            </button>
+            <button className='geoscene-icon-chat' title="GeoAI交互式工具">
+
+            </button>
+
+
         </div>
     );
 };

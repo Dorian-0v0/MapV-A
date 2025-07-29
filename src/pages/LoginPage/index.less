@@ -1,0 +1,125 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://www.geosceneonline.cn/static/feature.13d9d3a2.jpg'); /* 替换为你的背景图片 */
+  background-size: cover;
+  background-position: center;
+  filter: blur(0px);
+  z-index: -1;
+}
+
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
+.login-card {
+  width: 420px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.9);
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.logo {
+  height: 60px;
+  margin-bottom: 16px;
+}
+
+.welcome-text {
+  color: #1890ff;
+  margin-bottom: 0;
+}
+
+.login-form-button {
+  height: 40px;
+  font-size: 16px;
+  background: linear-gradient(to right, #1890ff, #096dd9);
+  border: none;
+  transition: all 0.3s;
+}
+
+.login-form-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(24, 144, 255, 0.4);
+}
+
+.social-login {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.social-btn {
+  flex: 1;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ant-tabs-tab {
+  font-size: 16px !important;
+  padding: 12px 24px !important;
+}
+
+.ant-tabs-ink-bar {
+  height: 3px !important;
+  background: linear-gradient(to right, #1890ff, #096dd9) !important;
+}
+
+.ant-input-affix-wrapper {
+  padding: 8px 11px !important;
+}
+
+.ant-input-prefix {
+  margin-right: 8px !important;
+}
+
+.login-form-forgot {
+  float: right;
+  color: #1890ff;
+}
+
+.login-form-forgot:hover {
+  color: #096dd9;
+}
+
+/* 响应式设计 */
+@media (max-width: 576px) {
+  .login-card {
+    width: 90%;
+  }
+  
+  .social-login {
+    flex-direction: column;
+  }
+}

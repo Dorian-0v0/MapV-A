@@ -59,7 +59,7 @@ const wmtsLayer = [
 const useMapStore = create((set) => ({
   wmtsLayer,
   map: {
-    basemap: wmtsLayer[1],
+    basemap: wmtsLayer[3],
   },
   view: {
     center: [116.805, 28.027], // 经度, 纬度

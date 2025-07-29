@@ -17,7 +17,7 @@ const MapWork = () => {
             <Sider 
             collapsible 
             collapsed={collapsed} 
-            width={250}
+            width={200}
             collapsedWidth={40}
             onCollapse={(value) => setCollapsed(value)}
             theme="light"
