@@ -193,7 +193,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
                 {isMapReady && (
                     <MapBottom
                         view={mapViewInstance}
-                        baseMapName={webMapInstance?.basemap?.title || '高德地图'}
+                        baseMapName={webMapInstance?.basemap?.title || '未知'}
                     />
                 )}
          

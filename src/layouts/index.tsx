@@ -156,7 +156,9 @@ const LayOut = () => {
               <p style={{ margin: '0', color: '#555', lineHeight: '1.3' }}>
                 这里是 AI 对话框的内容区域，可以放置聊天记录、输入框等。
               </p>
+              
             </div>
+            
           </div>
         </Modal>
 

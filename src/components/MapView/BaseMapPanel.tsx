@@ -46,7 +46,7 @@ const BaseMapPanel = () => {
       <div
         id="basemapGalleryContainer"
         style={{
-          height: '400px',
+          height: '320px',
           width: '100%',
           zIndex: 3,
           outline: 'none',
