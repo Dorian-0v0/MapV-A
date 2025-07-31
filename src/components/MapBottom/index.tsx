@@ -124,8 +124,14 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
         let content = "";
 
         if (scale < 5000) {
-            // 只显示street
-            content = res.street || "无街道信息";
+            // 显示省、市、县、镇
+            content = [
+                res.province,
+                res.city,
+                res.county,
+                res.town,
+                res.poi
+            ].filter(Boolean).join("\n");
         } else if (scale >= 5000 && scale < 30000) {
             // 显示省、市、县、镇
             content = [
@@ -135,22 +141,19 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
                 res.town
             ].filter(Boolean).join("\n");
         } else if (scale >= 30000 && scale < 160000) {
-            // 显示不详细
-            content = "显示不详细";
-        } else if (scale >= 160000 && scale < 800000) {
             // 显示省、市、县
             content = [
                 res.province,
                 res.city,
                 res.county
             ].filter(Boolean).join("\n");
-        } else if (scale >= 800000 && scale < 4000000) {
+        } else if (scale >= 160000 && scale < 800000) {
             // 显示省、市
             content = [
                 res.province,
                 res.city
             ].filter(Boolean).join("\n");
-        } else if (scale >= 4000000 && scale <= 800000) {
+        } else if (scale >= 800000 && scale < 4000000) {
             // 显示省
             content = res.province || "无省份信息";
         } else {

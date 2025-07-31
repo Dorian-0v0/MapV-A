@@ -13,6 +13,7 @@ import Query from '@geoscene/core/rest/support/Query';
 import "./index.less"
 import BaseMapPanel from './BaseMapPanel';
 import MapBottom from '../MapBottom';
+import LayerFilter from '../LayerFilter';
 interface MapViewProps {
     map: any;
     view?: any;
@@ -23,20 +24,21 @@ interface MapViewProps {
 const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type }) => {
     const mapViewRef = useRef<any>(null);
     const mapDivRef = useRef<HTMLDivElement>(null);
-    const { addLayerToMapAndStore, updateViewState, updateMapState } = useMapStore();
+    const { addLayerToMapAndStore, updateViewState, updateMapState, wmtsLayer } = useMapStore();
 
     // 新增状态：追踪地图是否加载完成
     const [isMapReady, setIsMapReady] = useState(false);
     const [mapViewInstance, setMapViewInstance] = useState<any>(null);
     const [webMapInstance, setWebMapInstance] = useState<any>(null);
-    
+
 
     useEffect(() => {
+        console.log("layers  pp", layers, map);
         if (!mapDivRef.current) return;
 
         // 初始化地图
         const webMap = new Map(map);
-        setWebMapInstance(webMap);
+
 
         // 初始化视图
         const mapView = new MapView({
@@ -63,48 +65,11 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
             if (type === "work") {
                 // 您原有的工作地图初始化逻辑...
                 const homeWidget = new Home({ view: mapView });
-                // 两个天地图底图
-                const tiandituVector = Basemap.fromId("tianditu-vector");
-                tiandituVector.thumbnailUrl = "./public/images/天地图矢量.png"; // 设置缩略图
-
-                // 定义天地图影像底图
-                const tiandituImage = Basemap.fromId("tianditu-image");
-                tiandituImage.thumbnailUrl = "./public/images/天地图影像.png"; // 设置缩略图
-                // 底图列表控件
                 const basemapGallery = new BasemapGallery({
                     container: 'basemapGalleryContainer',
                     view: mapView,
                     // source: [Basemap.fromId("tianditu-vector"), Basemap.fromId("tianditu-image")]
-                    source: [
-                        tiandituVector, tiandituImage,
-                        {
-                            baseLayers: [
-                                new WebTileLayer({
-                                    urlTemplate: "https://webst0{subDomain}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}",
-                                    subDomains: ["0", "1", "2", "3", "4"]
-                                })
-                            ],
-                            title: "高德矢量底图(火星坐标系)",
-                            id: "gaode-ve-basemap",
-                            thumbnailUrl: "./public/images/高德地图矢量.png"
-                        },
-                        {
-                            baseLayers: [
-                                new WebTileLayer({
-                                    urlTemplate: "https://webst0{subDomain}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
-                                    subDomains: ["0", "1", "2", "3", "4"]
-                                })
-                            ],
-                            title: "高德影像底图(火星坐标系)",
-                            id: "gaode-im-basemap",
-                            thumbnailUrl: "./public/images/高德地图影像.png"
-                        },
-                        {
-                            baseLayers: [],
-                            title: "空白底图",
-                            id: "empty-basemap",
-                        }
-                    ]
+                    source: wmtsLayer
                 });
                 // 底图控件
 
@@ -151,7 +116,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
             // 标记地图已加载完成
             setIsMapReady(true);
             setMapViewInstance(mapView);
-            
+            setWebMapInstance(webMap);
         });
 
         return () => {
@@ -185,18 +150,19 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
                     margin: '0',
                 }}
             />
+            <LayerFilter map={webMapInstance}></LayerFilter>
 
             <BaseMapPanel />
 
             {/* 只在 mapView 加载完成后渲染 MapBottom */}
-       
-                {isMapReady && (
-                    <MapBottom
-                        view={mapViewInstance}
-                        baseMapName={webMapInstance?.basemap?.title || '未知'}
-                    />
-                )}
-         
+
+            {isMapReady && (
+                <MapBottom
+                    view={mapViewInstance}
+                    baseMapName={webMapInstance?.basemap?.title || '未知'}
+                />
+            )}
+
         </div>
     );
 };

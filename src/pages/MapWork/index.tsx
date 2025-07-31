@@ -10,6 +10,7 @@ const MapWork = () => {
     const { map, view, layers} = useMapStore()
   
     const [collapsed, setCollapsed] = useState(false)
+
     
 
     return (

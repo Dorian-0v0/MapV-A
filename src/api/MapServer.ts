@@ -17,14 +17,14 @@ export const inverseGeoService = async (location) => {
         console.log("响应数据：", response);
         if (response.data.status === "0") {
             const { formatted_address, addressComponent } = response.data.result;
-            const { town, county, city, province } = addressComponent;
+            const { town, county, city, province,poi } = addressComponent;
 
             return {
-                street: formatted_address,
                 town: town,
                 county: county,
                 city: city,
-                province: province
+                province: province,
+                poi: poi
             };
         } else {
             console.error("逆地理编码服务返回错误：", response.data.msg);

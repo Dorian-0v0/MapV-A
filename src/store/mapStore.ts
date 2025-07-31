@@ -59,7 +59,7 @@ const wmtsLayer = [
 const useMapStore = create((set) => ({
   wmtsLayer,
   map: {
-    basemap: wmtsLayer[3],
+    basemap: wmtsLayer[1],
   },
   view: {
     center: [116.805, 28.027], // 经度, 纬度
@@ -67,6 +67,7 @@ const useMapStore = create((set) => ({
   },
   layers: [
     new GeoJSONLayer({
+      title: '成都市',
       url: 'https://geo.datav.aliyun.com/areas_v3/bound/510100_full.json',
       popupEnabled: true,
       renderer: {
@@ -82,6 +83,7 @@ const useMapStore = create((set) => ({
       },
     }),
     new GeoJSONLayer({
+      title: '全国矿产分别',
       url: './public/矿产.geojson',
       popupEnabled: true,
       renderer: {

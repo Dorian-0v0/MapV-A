@@ -6,7 +6,7 @@ import './index.less'
 const MapController = () => {
     const [isBaseMapVisible, setisBaseMapVisible] = useState(false);
 
-    const { layers } = useMapStore()
+    const { layers, map} = useMapStore()
     const layer =
         new GeoJSONLayer({
             url: 'https://geo.datav.aliyun.com/areas_v3/bound/360000_full.json',
@@ -68,6 +68,7 @@ const MapController = () => {
             </button>
 
             <button
+                onClick={() =>{eventBus.emit('open-layer-filter')}}
                 className='geoscene-icon-filter'
                 title="过滤查询">
             </button>
