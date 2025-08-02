@@ -1,4 +1,5 @@
 .map-controller-button {
+  // 默认展开状态样式（宽度200px）
   width: 200px;
   border: 2px solid #d9d9d9;
   padding: 2px;
@@ -6,9 +7,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  transition: width 0.3s ease; // 添加过渡效果使变化更平滑
 
   button {
-    width: calc(50% - 3px); // Two buttons per row with gap
+    width: calc(50% - 3px); // 两列布局
     height: 40px;
     border: 2px solid #d9d9d9;
     background-color: #fff;
@@ -25,9 +27,22 @@
     }
   }
 
-  @media (min-width: 480px) {
+  // 折叠状态样式（宽度50px）
+  &.collapsed {
+    width: 50px;
+    
     button {
-      width: calc(25% - 4.5px); // Four buttons per row on wider screens
+      width: 100%; // 每个按钮占满整行
+      height: 40px; // 保持高度不变
+    }
+  }
+
+  // 在大屏幕上的响应式布局（仅在展开状态生效）
+  @media (min-width: 480px) {
+    &:not(.collapsed) {
+      button {
+        width: calc(25% - 4.5px); // 四列布局
+      }
     }
   }
 }

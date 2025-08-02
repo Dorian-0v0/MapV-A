@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Input, Popover, message } from 'antd';
+
 import Point from '@geoscene/core/geometry/Point'; // 补充 Point 的导入
 import type MapView from '@geoscene/core/views/MapView';
 import { inverseGeoService } from '@/api/MapServer';
+import "./index.less"
+import { Button, notification, Switch, Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 // 定义 props 类型
 interface MapBottomProps {
@@ -11,8 +14,7 @@ interface MapBottomProps {
 }
 
 const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
-    const [showPopup, setShowPopup] = useState(false);
-    const popupRef = useRef<HTMLDivElement>(null);
+    const [api, contextHolder] = notification.useNotification();
     const [coordinates, setCoordinates] = useState({
         x: parseFloat(view.center.x.toFixed(6)),
         y: parseFloat(view.center.y.toFixed(6)),
@@ -21,18 +23,71 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
     const [center, setCenter] = useState<{ longitude: string; latitude: string } | null>(null);
     const [longitude, setLongitude] = useState('');
     const [latitude, setLatitude] = useState('');
-    const [popupContent, setPopupContent] = useState('');
+    const [enCodeGeoOpen, setEnCodeGeoOpen] = useState(false);
 
+
+    // 定义右下角通知
+    const openNotification = async (msg: string, result: string) => {
+        if (result === "无信息") {
+            console.log("显示通知", result);
+
+            api.info({
+                key: 0, // 确保信息不堆积
+                message: msg, // 标题
+                description: result, // 内容
+                placement: "bottomRight", // 位置（右下角）
+                className: "custom-notification", // 自定义 CSS 类名
+                duration: 5, // 设置为 0，不会自动关闭
+            })
+            return
+        }
+        api.success({
+            key: 0, // 确保信息不堆积
+            message: msg, // 标题
+            description: result, // 内容
+            placement: "bottomRight", // 位置（右下角）
+            duration: 5, // 设置为 0，不会自动关闭
+        });
+    };
+    // 保存事件处理器的引用
+    const [geoCodeClickHandler, setGeoCodeClickHandler] = useState();
+
+    const enCodeGeo = async (event) => {
+        console.log("逆地理编码开始", enCodeGeoOpen);
+        try {
+            const result = updatePopupContent(await inverseGeoService(event.mapPoint));
+            console.log('逆地理编码结果:', result);
+            openNotification("地点", result);
+        } catch (error) {
+            console.error('逆地理编码失败:', error);
+        }
+    };
+
+    // 开启/关闭地理编码
+    const handleEnCodeGeo = () => {
+
+        if (!enCodeGeoOpen) {
+            console.log("开启状态!!!!");
+            // 先移除可能已存在的事件处理器
+            setGeoCodeClickHandler(view.on('click', enCodeGeo));
+            console.log("dewferfger", geoCodeClickHandler);
+
+        } else {
+            console.log("关闭状态!!!!");
+            // 移除事件监听
+            geoCodeClickHandler.remove();
+            setEnCodeGeoOpen(false);
+        }
+        setEnCodeGeoOpen(!enCodeGeoOpen);
+    };
     // 监听鼠标移动和比例尺变化
     useEffect(() => {
         if (!view) return;
-
-        const scaleHandler = view.watch('scale', (newScale) => {
+        view.watch('scale', (newScale) => {
             setScale(newScale);
         });
 
         view.on('pointer-move', (event) => {
-
             const point = view.toMap({ x: event.x, y: event.y });
             setCoordinates({
                 x: parseFloat(point.x.toFixed(6)),
@@ -40,10 +95,8 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
             });
         });
 
-        return () => {
-            //  pointerMoveHandler.remove();
-            scaleHandler.remove();
-        };
+
+
     }, [view]);
 
     // 定位功能
@@ -101,67 +154,84 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
     };
 
     // 获取中心点
-    const getViewCenter = async () => {
-        if (!view) return;
-        setCenter(null);
-        const centerPoint = view.center;
-        setCenter({
-            longitude: parseFloat(centerPoint.longitude).toFixed(6),
-            latitude: parseFloat(centerPoint.latitude).toFixed(6)
-        });
-        const res = await inverseGeoService(centerPoint)
-        console.log("结果为", res);
-        // 数据渲染
-        updatePopupContent(res)
-    }
+    // const getViewCenter = async () => {
+    //     if (!view) return;
+    //     setCenter(null);
+    //     const centerPoint = view.center;
+    //     setCenter({
+    //         longitude: parseFloat(centerPoint.longitude).toFixed(6),
+    //         latitude: parseFloat(centerPoint.latitude).toFixed(6)
+    //     });
+    //     const res = await inverseGeoService(centerPoint)
+    //     console.log("结果为", res);
+    //     // 数据渲染
+    //     return updatePopupContent(res)
+    // }
 
     const updatePopupContent = (res) => {
-        if (!view || !res) return "";
+        if (!view || !res) return "无信息";
 
         const scale = view.scale;
         console.log("缩放比例", scale);
 
         let content = "";
 
-        if (scale < 5000) {
-            // 显示省、市、县、镇
+        if (scale < 18000) {
+            // 显示最详细：省、市、区/县、镇、POI
             content = [
                 res.province,
                 res.city,
-                res.county,
+                res.county,  // 区/县
                 res.town,
                 res.poi
             ].filter(Boolean).join("\n");
-        } else if (scale >= 5000 && scale < 30000) {
-            // 显示省、市、县、镇
+        } else if (scale >= 18000 && scale < 1150000) {
+            // 显示：省、市、区/县、镇
             content = [
                 res.province,
                 res.city,
                 res.county,
                 res.town
             ].filter(Boolean).join("\n");
-        } else if (scale >= 30000 && scale < 160000) {
-            // 显示省、市、县
+        } else if (scale >= 1150000 && scale < 2400000) {
+            // 显示：省、市、区/县
             content = [
                 res.province,
                 res.city,
                 res.county
             ].filter(Boolean).join("\n");
-        } else if (scale >= 160000 && scale < 800000) {
-            // 显示省、市
+        } else if (scale >= 2400000 && scale < 5000000) {
+            // 显示：省、市
             content = [
                 res.province,
                 res.city
             ].filter(Boolean).join("\n");
-        } else if (scale >= 800000 && scale < 4000000) {
-            // 显示省
-            content = res.province || "无省份信息";
-        } else {
-            // 默认情况
+        } else if (scale >= 5000000 && scale < 30000000) {
+            // 只显示省（如果有）
+            content = res.province || "无信息";
+        } else if (scale >= 30000000) {
+            // 比例尺太大，不显示信息
             content = "无信息";
         }
-        setPopupContent(content);
+        return content;
     };
+
+    // 获取天气状况
+    const getWeather = async () => {
+        if (!view) return "无信息";
+        const scale = view.scale;
+        if (scale < 160000) {
+            const res1 = await inverseGeoService(view.center)
+            const res = await weatherService(res1?.countyCode.substr(3, 6))
+            return res
+        } else {
+            return "无信息"
+        }
+
+    };
+
+
+
 
 
 
@@ -224,70 +294,28 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
 
                 </button>
             </div>
-
-            {showPopup && (
-                <div
-                    ref={popupRef}
-                    style={{
-                        position: 'absolute',
-                        bottom: '100%', // 显示在按钮上方
-                        right: '0',
-                        marginBottom: '8px', // 与按钮的间距
-                        backgroundColor: '#ffffff',
-                        border: '1px solid #ccc',
-                        padding: '10px',
-                        width: '250px',
-                    }}
-                >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', }}>
-                        <div style={{
-                            top: '0px',
-                            left: '0px',
-                            fontSize: '16px',
-                            fontWeight: 'bold',
-                        }}>
-                            地点
-                            <div style={{
-                                left: '0px',
-                                fontSize: '12px',
-                                fontWeight: 'normal',
-                                height: '50px',
-                                marginTop: '8px',
-                            }}>
-                                {popupContent}
-                            </div>
-                        </div>
-
-
-
-                        <button
-                            onClick={() => {
-                                setShowPopup(false);
-                            }}
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: '16px',
-                                marginLeft: '10px',
-                            }}
-                        >
-                            ❎
-                        </button>
-                    </div>
-                </div>
-            )}
-            <button
-                style={{ width: '130px', height: '20px', border: 'none' }}
-                className='geoscene-widget--button geoscene-icon-map-pin'
-                onClick={() => {
-                    getViewCenter()
-                    setShowPopup(true)
-                }}
+            {contextHolder}
+            <Tooltip
+                title="逆地理编码功能可以将坐标转换为地址信息"
+                placement="top"
+                overlayStyle={{ maxWidth: 300 }}
             >
-                <span>获取中心点信息</span>
-            </button>
-
+                <span style={{ marginRight: 8 }}>
+                    <Switch
+                        style={{
+                            bottom: 2,
+                        }}
+                        checked={enCodeGeoOpen}
+                        size="small"
+                        onChange={() => {
+                            handleEnCodeGeo()
+                        }}
+                        checkedChildren="关闭"
+                        unCheckedChildren="开启"
+                    />
+                </span>
+                <QuestionCircleOutlined style={{ color: '#1890ff', cursor: 'pointer' }} />
+            </Tooltip>
 
         </div>
     );

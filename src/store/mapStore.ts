@@ -18,7 +18,7 @@ interface StoreState {
   layers: any[];
   addLayer: (layer: any) => void;
   updateViewState: (center: [number, number], zoom: number) => void;
-  updateMapState: (map: any) => void;
+  updateMapState: (map: any) => void;     // 添加地图
 }
 const tiandituVector = Basemap.fromId("tianditu-vector");
 tiandituVector.thumbnailUrl = "./public/images/天地图矢量.png"; // 设置缩略图
@@ -27,7 +27,17 @@ tiandituVector.thumbnailUrl = "./public/images/天地图矢量.png"; // 设置�
 const tiandituImage = Basemap.fromId("tianditu-image");
 tiandituImage.thumbnailUrl = "./public/images/天地图影像.png"; // 设置缩略图
 const wmtsLayer = [
-  tiandituVector, tiandituImage,
+  tiandituVector,
+  {
+    id:"Arcgis-World-Imagery",
+    title: "ArcGIS-影像底图",
+    thumbnailUrl: "./public/images/ArcGIS-影像.png",
+    baseLayers: [ 
+      new WebTileLayer({  
+        urlTemplate:"https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.png"
+      })
+    ]
+  },
   {
     baseLayers: [
       new WebTileLayer({

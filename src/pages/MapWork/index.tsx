@@ -10,6 +10,7 @@ const MapWork = () => {
     const { map, view, layers} = useMapStore()
   
     const [collapsed, setCollapsed] = useState(false)
+    // const [isChanged, setIsChanged] = useState(false)
 
     
 
@@ -19,11 +20,11 @@ const MapWork = () => {
             collapsible 
             collapsed={collapsed} 
             width={200}
-            collapsedWidth={40}
+            collapsedWidth={50}
             onCollapse={(value) => setCollapsed(value)}
             theme="light"
             >
-                <MapController />
+                <MapController isChanged={collapsed} />
             </Sider>
             <Layout>
                 <MapViewCom map={map} view={view} layers = {layers} type = {"work"}></MapViewCom>

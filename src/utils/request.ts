@@ -4,4 +4,6 @@ const baseURL = '/api';
 const instance = axios.create({ baseURL })
 const tiandituKey = '4267820f43926eaf808d61dc07269beb'
 export default instance;
-export { tiandituKey }
+
+const gaodekey = 'a42c844bdcd8035d9d308ba0187ff23c'
+export { tiandituKey, gaodekey }

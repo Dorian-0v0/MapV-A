@@ -3,9 +3,9 @@ import GeoJSONLayer from '@geoscene/core/layers/GeoJSONLayer';
 import eventBus from '@/utils/eventBus.js';
 import useMapStore from '@/store/mapStore';
 import './index.less'
-const MapController = () => {
+const MapController = ({isChanged}) => {
     const [isBaseMapVisible, setisBaseMapVisible] = useState(false);
-
+    
     const { layers, map} = useMapStore()
     const layer =
         new GeoJSONLayer({
@@ -41,8 +41,9 @@ const MapController = () => {
             eventBus.removeAllListeners();
         };
     }, [])
+    // ${isChanged ? 'changed' : ''}
     return (
-        <div className='map-controller-button'>
+        <div className={`map-controller-button ${isChanged ? 'collapsed' : ''}`}>
             <button
                 className='geoscene-icon-collection'
                 onClick={addlayer}

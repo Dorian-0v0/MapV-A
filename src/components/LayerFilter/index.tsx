@@ -218,16 +218,16 @@ const LayerFilter = ({ map }) => {
 
     useEffect(() => {
         console.log("Layer0000000", selectedLayer);
-
+        setFilterExpression([['', '', null]])
         if (selectedLayer?.fields) {
             setFields(selectedLayer.fields);
         }
     }, [selectedLayer?.fields])
 
     useEffect(() => {
-         eventBus.on('open-layer-filter', () => {
-                    setIsModalOpen(true);
-                })
+        eventBus.on('open-layer-filter', () => {
+            setIsModalOpen(true);
+        })
         return () => {
             setIsModalOpen(false);
             console.log('ziid');
@@ -237,213 +237,213 @@ const LayerFilter = ({ map }) => {
     }, [])
 
     return (
- 
-      
-            <Modal
-                width={900}
-                bodyStyle={{
-                    height: 400,  // 设置弹框内容区域高度
-                    padding: 0,   // 移除内边距
-                    display: 'flex' // 使用flex布局
-                }}
-                title="图层条件过滤"
-                closable={{ 'aria-label': 'Custom Close Button' }}
-                open={isModalOpen}
-                onOk={() => {
-                    useFilter()
-                    // setIsModalOpen(false);
-                }}
-                onCancel={() => {
-                    setIsModalOpen(false);
-                }}
-            >
-                <Sider
-                    style={{
-                        height: '100%', // Sider高度填满Modal
-                        backgroundColor: '#f5f5f5',
-                        overflow: 'auto' // 如果内容超出高度允许滚动
-                    }}
-                    width={150}>
-                    <List
 
-                        size="small"
-                        // bordered
-                        dataSource={layers}
-                        renderItem={(layer) => (
-                            <List.Item
-                                onClick={() => setSelectedLayer(layer)}
-                                className="list-item"
-                                style={{
-                                    cursor: 'pointer',
-                                    backgroundColor: selectedLayer?.id === layer.id ? '#1677ff' : '#ffffff',
-                                    border: '1px solid #d9d9d9',
-                                    height: 40,
-                                    fontSize: '12px',
-                                    marginBottom: 4, // 项与项之间的间距
-                                    paddingLeft: 1,
-                                    paddingTop: 0,
-                                    color: selectedLayer?.id === layer.id ? '#ffffff' : '#1c1c1c',
-                                    transition: 'all 0.3s', // 添加过渡动画效果
+
+        <Modal
+            width={900}
+            bodyStyle={{
+                height: 400,  // 设置弹框内容区域高度
+                padding: 0,   // 移除内边距
+                display: 'flex' // 使用flex布局
+            }}
+            title="图层条件过滤"
+            closable={{ 'aria-label': 'Custom Close Button' }}
+            open={isModalOpen}
+            onOk={() => {
+                useFilter()
+                // setIsModalOpen(false);
+            }}
+            onCancel={() => {
+                setIsModalOpen(false);
+            }}
+        >
+            <Sider
+                style={{
+                    height: '100%', // Sider高度填满Modal
+                    backgroundColor: '#f5f5f5',
+                    overflow: 'auto' // 如果内容超出高度允许滚动
+                }}
+                width={150}>
+                <List
+
+                    size="small"
+                    // bordered
+                    dataSource={layers}
+                    renderItem={(layer) => (
+                        <List.Item
+                            onClick={() => setSelectedLayer(layer)}
+                            className="list-item"
+                            style={{
+                                cursor: 'pointer',
+                                backgroundColor: selectedLayer?.id === layer.id ? '#1677ff' : '#ffffff',
+                                border: '1px solid #d9d9d9',
+                                height: 40,
+                                fontSize: '12px',
+                                marginBottom: 4, // 项与项之间的间距
+                                paddingLeft: 1,
+                                paddingTop: 0,
+                                color: selectedLayer?.id === layer.id ? '#ffffff' : '#1c1c1c',
+                                transition: 'all 0.3s', // 添加过渡动画效果
+
+                            }}
+                        >
+                            {layer?.title}
+                        </List.Item>
+                    )}
+                />
+            </Sider>
+            <Content
+                style={{
+                    padding: 24,
+                    minHeight: 280,
+                    background: '#fff',
+                    overflowY: 'auto', // 垂直溢出时显示滚动条
+                }}>
+                {filterExpression.map((condition, index) => (
+                    <div key={index} style={{ marginBottom: '16px' }}>
+                        {index > 0 ? (
+                            <Select
+                                style={{ width: 80, marginRight: 8 }}
+                                value={filterConnections[index]}
+                                onChange={(value) => updateFilterCondition1(index, value, 3)}
+                                options={[
+                                    { value: 'AND', label: 'AND' },
+                                    { value: 'OR', label: 'OR' }
+                                ]}
+                            />
+                        ) : (
+                            <span style={{ display: 'inline-block', width: 80, marginRight: 8, textAlign: 'right' }}>where</span>
+                        )}
+                        <Space>
+                            <Select
+                                style={{ width: 120 }}
+                                placeholder="选择字段"
+                                value={condition[0]}
+                                showSearch  // 允许搜索，但不允许输入
+                                optionFilterProp="label"  // 按 label 搜索
+                                filterOption={(input, option) =>
+                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                                }
+                                onChange={(value) => { // 添加防抖？？
+                                    console.log("选择字段：", value);
+                                    updateFilterCondition1(index, value, 0);
+                                    console.log("输入字段", condition[0]);
+                                    setFieldValues([])
+                                }}
+                                options={
+                                    fields.map(field => ({
+                                        value: field.name,
+                                        label: field.name
+                                    }))
+                                }
+                            />
+
+                            <Select
+                                style={{ width: 120 }}
+                                value={filterExpression[index][1]}
+                                onChange={(value) => {
+                                    condition[2] = null;
+                                    updateFilterCondition1(index, null, 2)
+                                    updateFilterCondition1(index, value, 1)
+                                    // 清空右边
 
                                 }}
-                            >
-                                {layer?.title}
-                            </List.Item>
-                        )}
-                    />
-                </Sider>
-                <Content
-                    style={{
-                        padding: 24,
-                        minHeight: 280,
-                        background: '#fff',
-                        overflowY: 'auto', // 垂直溢出时显示滚动条
-                    }}>
-                    {filterExpression.map((condition, index) => (
-                        <div key={index} style={{ marginBottom: '16px' }}>
-                            {index > 0 ? (
-                                <Select
-                                    style={{ width: 80, marginRight: 8 }}
-                                    value={filterConnections[index]}
-                                    onChange={(value) => updateFilterCondition1(index, value, 3)}
-                                    options={[
-                                        { value: 'AND', label: 'AND' },
-                                        { value: 'OR', label: 'OR' }
-                                    ]}
-                                />
-                            ) : (
-                                <span style={{ display: 'inline-block', width: 80, marginRight: 8, textAlign: 'right' }}>where</span>
-                            )}
-                            <Space>
-                                <Select
-                                    style={{ width: 120 }}
-                                    placeholder="选择字段"
-                                    value={condition[0]}
-                                    showSearch  // 允许搜索，但不允许输入
-                                    optionFilterProp="label"  // 按 label 搜索
-                                    filterOption={(input, option) =>
-                                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                    }
-                                    onChange={(value) => { // 添加防抖？？
-                                        console.log("选择字段：", value);
-                                        updateFilterCondition1(index, value, 0);
-                                        console.log("输入字段", condition[0]);
-                                        setFieldValues([])
-                                    }}
-                                    options={
-                                        fields.map(field => ({
-                                            value: field.name,
-                                            label: field.name
-                                        }))
-                                    }
-                                />
+                                options={filterOperators}
+                            />
 
-                                <Select
-                                    style={{ width: 120 }}
-                                    value={filterExpression[index][1]}
-                                    onChange={(value) => {
-                                        condition[2] = null;
-                                        updateFilterCondition1(index, null, 2)
-                                        updateFilterCondition1(index, value, 1)
-                                        // 清空右边
+                            {
+                                !['IS NULL', 'IS NOT NULL'].includes(filterExpression[index][1]) && (
+                                    condition[1] === 'IN' || condition[1] === 'NOT IN' ? (
+                                        <Select
+                                            mode="multiple"
+                                            placeholder="选择值"
+                                            notFoundContent={"搜索中..."}
+                                            value={condition[2] ? condition[2] : []}
+                                            onFocus={async () => {
+                                                await getFieldValues(condition[0]);
+                                                console.log('字段值:', fieldValues);
+                                                console.log("所有字段的格式", fields.map(field => ({
+                                                    value: field.name,
+                                                    label: field.name
+                                                })));
+                                            }}
+                                            onChange={(values) => {
+                                                console.log("选择的值：", values);
+                                                updateFilterCondition1(
+                                                    index,
+                                                    values,
+                                                    2
+                                                )
 
-                                    }}
-                                    options={filterOperators}
-                                />
+                                            }}
 
-                                {
-                                    !['IS NULL', 'IS NOT NULL'].includes(filterExpression[index][1]) && (
-                                        condition[1] === 'IN' || condition[1] === 'NOT IN' ? (
-                                            <Select
-                                                mode="multiple"
-                                                placeholder="选择值"
-                                                notFoundContent={"搜索中..."}
-                                                value={condition[2] ? condition[2] : []}
-                                                onFocus={async () => {
-                                                    await getFieldValues(condition[0]);
-                                                    console.log('字段值:', fieldValues);
-                                                    console.log("所有字段的格式", fields.map(field => ({
-                                                        value: field.name,
-                                                        label: field.name
-                                                    })));
-                                                }}
-                                                onChange={(values) => {
-                                                    console.log("选择的值：", values);
-                                                    updateFilterCondition1(
-                                                        index,
-                                                        values,
-                                                        2
-                                                    )
+                                            options={fieldValues || []}
+                                        />
+                                    ) : (
+                                        <Select
+                                            showSearch
+                                            mode="tags"
 
-                                                }}
-                             
-                                                options={fieldValues || []}
-                                            />
-                                        ) : (
-                                            <Select
-                                                showSearch
-                                                mode="tags"
-
-                                                allowClear
-                                                notFoundContent={"搜索中..."}
-                                                style={{ width: 180 }}
-                                                placeholder="输入或选择值"
-                                                value={condition[2]}
-                                                onChange={(vals) => {
-                                                    const value = Array.isArray(vals) ? vals[vals?.length - 1] : vals
-                                                    console.log("选择的值：", value);
-                                                    updateFilterCondition1(index, value, 2);
-                                                }}
-                                                onFocus={async () => {
-                                                    await getFieldValues(condition[0]);
-                                                    console.log('字段值:', fieldValues);
-                                                    console.log("所有字段的格式", fields.map(field => ({
-                                                        value: field.name,
-                                                        label: field.name
-                                                    })));
-                                                }}
-                                                options={fieldValues || []}
-                                            />
-                                        )
-                                    )
-                                }
-
-                                {
-                                    filterExpression.length > 1 && (
-                                        <Button
-                                            icon={<CloseOutlined />}
-                                            onClick={() => removeFilterCondition(index)}
+                                            allowClear
+                                            notFoundContent={"搜索中..."}
+                                            style={{ width: 180 }}
+                                            placeholder="输入或选择值"
+                                            value={condition[2]}
+                                            onChange={(vals) => {
+                                                const value = Array.isArray(vals) ? vals[vals?.length - 1] : vals
+                                                console.log("选择的值：", value);
+                                                updateFilterCondition1(index, value, 2);
+                                            }}
+                                            onFocus={async () => {
+                                                await getFieldValues(condition[0]);
+                                                console.log('字段值:', fieldValues);
+                                                console.log("所有字段的格式", fields.map(field => ({
+                                                    value: field.name,
+                                                    label: field.name
+                                                })));
+                                            }}
+                                            options={fieldValues || []}
                                         />
                                     )
-                                }
-                            </Space>
-                        </div>
-                    ))}
-                    <div style={{ padding: '16px' }}>
-                        <div style={{ marginBottom: '16px', display: 'flex', gap: '10px' }}>
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={addFilterCondition}
-                            >
-                                添加条件
-                            </Button>
-                            <Button
-                                type="primary"
-                                danger
-                                icon={<DeleteOutlined />}
-                                onClick={clearAllFilterCondition}
-                            >
-                                清空全部
-                            </Button>
-                        </div>
+                                )
+                            }
+
+                            {
+                                filterExpression.length > 1 && (
+                                    <Button
+                                        icon={<CloseOutlined />}
+                                        onClick={() => removeFilterCondition(index)}
+                                    />
+                                )
+                            }
+                        </Space>
                     </div>
-                </Content>
+                ))}
+                <div style={{ padding: '16px' }}>
+                    <div style={{ marginBottom: '16px', display: 'flex', gap: '10px' }}>
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={addFilterCondition}
+                        >
+                            添加条件
+                        </Button>
+                        <Button
+                            type="primary"
+                            danger
+                            icon={<DeleteOutlined />}
+                            onClick={clearAllFilterCondition}
+                        >
+                            清空全部
+                        </Button>
+                    </div>
+                </div>
+            </Content>
 
 
 
-            </Modal>
-   
+        </Modal>
+
     )
 }
 
