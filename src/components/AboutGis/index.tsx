@@ -40,7 +40,7 @@ const AboutGis = () => {
       title="关于项目">
       <div style={{
         marginTop: '-60px',
-        marginBottom: '-20px'
+        marginBottom: '-20px',
       }}>
         <ReactMarkdown
           rehypePlugins={[rehypeRaw]}

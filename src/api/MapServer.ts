@@ -1,4 +1,4 @@
-import { gaodekey, tiandituKey } from "@/utils/request";
+import { tenxunkey, tiandituKey } from "@/utils/request";
 import axios from 'axios';
 export const inverseGeoService = async (location) => {
     const { longitude, latitude } = location;
@@ -16,8 +16,8 @@ export const inverseGeoService = async (location) => {
         });
         console.log("响应数据：", response);
         if (response.data.status === "0") {
-            const { formatted_address, addressComponent } = response.data.result;
-            const { town, county, city, province,poi ,county_code} = addressComponent;
+            const { addressComponent } = response.data.result;
+            const { town, county, city, province, poi, county_code } = addressComponent;
 
             return {
                 town: town,
@@ -25,7 +25,7 @@ export const inverseGeoService = async (location) => {
                 city: city,
                 province: province,
                 poi: poi,
-                countyCode:county_code 
+                countyCode: county_code
             };
         } else {
             console.error("逆地理编码服务返回错误：", response.data.msg);
@@ -37,18 +37,21 @@ export const inverseGeoService = async (location) => {
     }
 }
 
+// 获取天气状况
+export const weatherService = async (locationCode: string) => {
+    try {
+        const response = await axios.get(`https://apis.map.qq.com/ws/weather/v1/`, {
+            params: {
+                location: locationCode,
+                key: tenxunkey
+            }
+        });
+        console.log("响应数据：", response);
+        if (response.data.status != 0) {
+            console.error("获取", response.data.msg);
+        }
 
-// export const weatherService = async (locationCode : string) => { 
-//     try {
-//         const response = await axios.get(`https://restapi.amap.com/v3/weather/weatherInfo`, {
-//             params: {
-//                 city: locationCode,
-//                 key: gaodekey
-//             }
-//         });
-//         console.log("响应数据：", response);
-//         if (response.data.status != 1) {
-//             console.error("获取", response.data.msg);
-//         }
-
-// }
+    } catch (error) {
+        console.error("获取数据时发生错误：", error);
+    }
+}

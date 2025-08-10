@@ -86,6 +86,7 @@ const LayerFilter = ({ map }) => {
             onStatisticField: fieldName,
             outStatisticFieldName: "count"
         }];
+        query.where = "1=1";
         let values: any[] = [];
         try {
             query.groupByFieldsForStatistics = [fieldName];
@@ -355,6 +356,7 @@ const LayerFilter = ({ map }) => {
                                 !['IS NULL', 'IS NOT NULL'].includes(filterExpression[index][1]) && (
                                     condition[1] === 'IN' || condition[1] === 'NOT IN' ? (
                                         <Select
+                                            style={{ width: 180 }}
                                             mode="multiple"
                                             placeholder="选择值"
                                             notFoundContent={"搜索中..."}
@@ -383,7 +385,6 @@ const LayerFilter = ({ map }) => {
                                         <Select
                                             showSearch
                                             mode="tags"
-
                                             allowClear
                                             notFoundContent={"搜索中..."}
                                             style={{ width: 180 }}

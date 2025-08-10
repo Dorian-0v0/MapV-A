@@ -6,7 +6,7 @@ import './index.less'
 const MapController = ({isChanged}) => {
     const [isBaseMapVisible, setisBaseMapVisible] = useState(false);
     
-    const { layers, map} = useMapStore()
+    const { layers} = useMapStore()
     const layer =
         new GeoJSONLayer({
             url: 'https://geo.datav.aliyun.com/areas_v3/bound/360000_full.json',
@@ -84,7 +84,10 @@ const MapController = ({isChanged}) => {
                 title="测量">
             </button>
 
-            <button className='geoscene-icon-partly-cloudy' title="区域天气">
+            <button className='geoscene-icon-partly-cloudy' title="区域天气" 
+            onClick={() => {
+                eventBus.emit('getWeather')
+            }}>
 
             </button>
             <button className='geoscene-icon-chat' title="GeoAI交互式工具">

@@ -5,7 +5,7 @@ import Fullscreen from '@geoscene/core/widgets/Fullscreen'
 import BasemapGallery from '@geoscene/core/widgets/BasemapGallery'
 import Basemap from "@geoscene/core/Basemap";
 import ScaleBar from '@geoscene/core/widgets/ScaleBar'
-import WebTileLayer from "@geoscene/core/layers/WebTileLayer";
+import {weatherService} from '@/api/MapServer'
 import Home from "@geoscene/core/widgets/Home";
 import useMapStore from '@/store/mapStore'
 import eventBus from '@/utils/eventBus.js';
@@ -72,7 +72,9 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
                     source: wmtsLayer
                 });
                 // 底图控件
-
+                 mapView.ui.add(homeWidget, "top-left");
+                
+                // 加载所有图层
                 webMap.addMany(layers);
                 layers.forEach(ly => {
                     mapView.whenLayerView(ly).then(layerView => {
@@ -91,8 +93,9 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
                     });
                 });
 
-                mapView.ui.add(homeWidget, "top-left");
+               
 
+                // 添加图层
                 eventBus.on('addLayerInWork', (layer: any) => {
                     webMap.add(layer);
                     mapView.whenLayerView(layer).then(layerView => {
@@ -111,6 +114,25 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
                     });
                     addLayerToMapAndStore(layer);
                 });
+
+
+                // 获取天气
+                // 获取天气状况
+                eventBus.on('getWeather', async () => {
+                    console.log('getWeather')
+                    if (!mapView) return "无信息";
+                    const scale = mapView.scale;
+                    if (scale < 160000) {
+                        console.log('getWeatheewwewwwwr')
+                        const res = await weatherService(`${mapView.center.latitude},${mapView.center.longitude}`);
+                        console.log("天气查询结果：", res);
+                        
+                        return res
+                    } else {
+                        return "无信息"
+                    }
+                });
+
             }
 
             // 标记地图已加载完成

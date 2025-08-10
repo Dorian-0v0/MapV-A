@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import Point from '@geoscene/core/geometry/Point'; // 补充 Point 的导入
 import type MapView from '@geoscene/core/views/MapView';
-import { inverseGeoService } from '@/api/MapServer';
+import { inverseGeoService, weatherService } from '@/api/MapServer';
 import "./index.less"
-import { Button, notification, Switch, Tooltip } from 'antd';
+import { notification, Switch, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
 // 定义 props 类型
@@ -24,7 +24,9 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
     const [longitude, setLongitude] = useState('');
     const [latitude, setLatitude] = useState('');
     const [enCodeGeoOpen, setEnCodeGeoOpen] = useState(false);
-
+    // 保存事件处理器的引用
+    const [geoCodeClickHandler, setGeoCodeClickHandler] = useState();
+    // 获取天气情况
 
     // 定义右下角通知
     const openNotification = async (msg: string, result: string) => {
@@ -36,8 +38,9 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
                 message: msg, // 标题
                 description: result, // 内容
                 placement: "bottomRight", // 位置（右下角）
-                className: "custom-notification", // 自定义 CSS 类名
+                // className: "custom-notification", // 自定义 CSS 类名
                 duration: 5, // 设置为 0，不会自动关闭
+                style: { whiteSpace: "pre-line" }, // 关键：保留换行符
             })
             return
         }
@@ -47,10 +50,9 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
             description: result, // 内容
             placement: "bottomRight", // 位置（右下角）
             duration: 5, // 设置为 0，不会自动关闭
+            style: { whiteSpace: "pre-line", width: "350px" }, // 关键：保留换行符
         });
     };
-    // 保存事件处理器的引用
-    const [geoCodeClickHandler, setGeoCodeClickHandler] = useState();
 
     const enCodeGeo = async (event) => {
         console.log("逆地理编码开始", enCodeGeoOpen);
@@ -66,20 +68,24 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
     // 开启/关闭地理编码
     const handleEnCodeGeo = () => {
 
+        const mapContainer = view.container;
         if (!enCodeGeoOpen) {
             console.log("开启状态!!!!");
             // 先移除可能已存在的事件处理器
             setGeoCodeClickHandler(view.on('click', enCodeGeo));
             console.log("dewferfger", geoCodeClickHandler);
-
+            setEnCodeGeoOpen(true);
+            mapContainer.style.cursor = 'crosshair'
         } else {
             console.log("关闭状态!!!!");
             // 移除事件监听
             geoCodeClickHandler.remove();
             setEnCodeGeoOpen(false);
+            mapContainer.style.cursor = 'default'
         }
-        setEnCodeGeoOpen(!enCodeGeoOpen);
+
     };
+
     // 监听鼠标移动和比例尺变化
     useEffect(() => {
         if (!view) return;
@@ -153,20 +159,6 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
         view.popup.close();
     };
 
-    // 获取中心点
-    // const getViewCenter = async () => {
-    //     if (!view) return;
-    //     setCenter(null);
-    //     const centerPoint = view.center;
-    //     setCenter({
-    //         longitude: parseFloat(centerPoint.longitude).toFixed(6),
-    //         latitude: parseFloat(centerPoint.latitude).toFixed(6)
-    //     });
-    //     const res = await inverseGeoService(centerPoint)
-    //     console.log("结果为", res);
-    //     // 数据渲染
-    //     return updatePopupContent(res)
-    // }
 
     const updatePopupContent = (res) => {
         if (!view || !res) return "无信息";
@@ -178,34 +170,17 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
 
         if (scale < 18000) {
             // 显示最详细：省、市、区/县、镇、POI
-            content = [
-                res.province,
-                res.city,
-                res.county,  // 区/县
-                res.town,
-                res.poi
-            ].filter(Boolean).join("\n");
+            content = `${res.province} ${res.city} ${res.county}\n${res.town}\nPOI点：${res.poi}`
+            console.log("详细地址为", content);
+
         } else if (scale >= 18000 && scale < 1150000) {
             // 显示：省、市、区/县、镇
-            content = [
-                res.province,
-                res.city,
-                res.county,
-                res.town
-            ].filter(Boolean).join("\n");
+            content = `${res.province} ${res.city} ${res.county}\n${res.town}`
         } else if (scale >= 1150000 && scale < 2400000) {
             // 显示：省、市、区/县
-            content = [
-                res.province,
-                res.city,
-                res.county
-            ].filter(Boolean).join("\n");
+            content = `${res.province} ${res.city} ${res.county}`
         } else if (scale >= 2400000 && scale < 5000000) {
-            // 显示：省、市
-            content = [
-                res.province,
-                res.city
-            ].filter(Boolean).join("\n");
+            content = `${res.province} ${res.city}`
         } else if (scale >= 5000000 && scale < 30000000) {
             // 只显示省（如果有）
             content = res.province || "无信息";
@@ -215,22 +190,6 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
         }
         return content;
     };
-
-    // 获取天气状况
-    const getWeather = async () => {
-        if (!view) return "无信息";
-        const scale = view.scale;
-        if (scale < 160000) {
-            const res1 = await inverseGeoService(view.center)
-            const res = await weatherService(res1?.countyCode.substr(3, 6))
-            return res
-        } else {
-            return "无信息"
-        }
-
-    };
-
-
 
 
 
