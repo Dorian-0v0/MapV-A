@@ -7,6 +7,7 @@ import "./index.less"
 import { CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import eventBus from "@/utils/eventBus";
 
+// 图层过滤
 const LayerFilter = ({ map }) => {
     const [layers, setLayers] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -238,8 +239,6 @@ const LayerFilter = ({ map }) => {
     }, [])
 
     return (
-
-
         <Modal
             width={900}
             bodyStyle={{
@@ -252,7 +251,7 @@ const LayerFilter = ({ map }) => {
             open={isModalOpen}
             onOk={() => {
                 useFilter()
-                // setIsModalOpen(false);
+                setIsModalOpen(false);
             }}
             onCancel={() => {
                 setIsModalOpen(false);

@@ -215,15 +215,23 @@ pnpm run test
 
 ---
 
-### 📆 2025-07-27
-##### ✅ **已完成**  
-
-##### 🚧 **进行中**
-
-##### 🔄 **待完成**
-
-##### 🔍 **思考**
-
+### 📆 2025-08-11
+- 添加图层
+  - 支持WebURL的方式（geojson、Esri等）
+    - 从 Arcgis restfil api 创建一个新图层实例。根据 URL，返回的图层类型可能是 FeatureLayer、TileLayer、MapImageLayer、ImageryLayer、ImageryTileLayer、SceneLayer、StreamLayer、IntegratedMeshLayer、IntegratedMesh3DTilesLayer、PointCloudLayer、BuildingSceneLayer、ElevationLayer 或 GroupLayer。
+    参考[fromGeoSceneServerUrl](https://doc.geoscene.cn/javascript/4.29/api-reference/geoscene-layers-Layer.html#fromGeoSceneServerUrl) 
+    - 支持Geojson 数据源
+    - OGC WFS 数据源
+    - OGC WMS 数据源
+    - OGC WMTS 数据源
+  - 支持文件添加
+    - shp文件
+    - geojson文件
+    - csv
+    - tif
+    - csv
+    - gdb
+    - gbk
 ---
 
 ### 📆 2025-07-27

@@ -14,6 +14,7 @@ import "./index.less"
 import BaseMapPanel from './BaseMapPanel';
 import MapBottom from '../MapBottom';
 import LayerFilter from '../LayerFilter';
+import AddLayers from '../AddLayers';
 interface MapViewProps {
     map: any;
     view?: any;
@@ -173,7 +174,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
                 }}
             />
             <LayerFilter map={webMapInstance}></LayerFilter>
-
+                <AddLayers map={webMapInstance}></AddLayers>
             <BaseMapPanel />
 
             {/* 只在 mapView 加载完成后渲染 MapBottom */}
