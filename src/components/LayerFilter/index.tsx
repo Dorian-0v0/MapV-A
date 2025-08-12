@@ -29,7 +29,6 @@ const LayerFilter = ({ map }) => {
         { value: 'NOT IN', label: '不在列表中' },
         { value: 'LIKE', label: '包含' },
         { value: 'NOT LIKE', label: '不包含' },
-
         { value: 'IS NULL', label: '为空' },
         { value: 'IS NOT NULL', label: '不为空' },
     ];
@@ -57,48 +56,35 @@ const LayerFilter = ({ map }) => {
 
     // 更新过滤条件1
     const updateFilterCondition1 = (index, newvalue, childIndex) => {
-
         if (childIndex === 3) { // 更新连接符号
             const newFilterConnections = [...filterConnections]; // 复制原数组
             newFilterConnections[index] = newvalue; // 修改副本
             setFilterConnections(newFilterConnections); // 更新状态
             return;
         }
-
         const newFilterExpression = [...filterExpression];
         newFilterExpression[index] = [...filterExpression[index]]; // 复制子数组
         newFilterExpression[index][childIndex] = newvalue;
-
         setFilterExpression(newFilterExpression); // 更新状态
-
-
     };
 
 
     // 获取字段所有值
     const getFieldValues = async (fieldName: string) => {
         console.log("查询字段", fieldName)
-        const query = selectedLayer?.createQuery();
-        // statisticType 统计类型，此处设置为"count"表示进行计数统计
-        // onStatisticField 用于统计的字段名称
-        // outStatisticFieldName 输出统计结果的字段名称，此处固定为"count"
-        query.outStatistics = [{
-            statisticType: "count",
-            onStatisticField: fieldName,
-            outStatisticFieldName: "count"
-        }];
-        query.where = "1=1";
+        const query = {
+            returnDistinctValues: true,
+            outFields: [fieldName],
+            where: '1=1',
+            returnGeometry: false
+        }
         let values: any[] = [];
         try {
-            query.groupByFieldsForStatistics = [fieldName];
             console.log("开始查询");
-
-            selectedLayer?.queryFeatures(query).then(function (result) {
+            selectedLayer?.queryFeatures(query).then((result) => {
                 console.log("查询得到的结果", result);
-
                 values = result.features.map(feature => feature.attributes[fieldName]);
                 const thisfieldValues = values.map(value => ({ label: value, value: value }));
-
                 console.log("字段所有值（由于渲染）", thisfieldValues);
                 setFieldValues(thisfieldValues);
                 console.log('字有唯一值:', values);

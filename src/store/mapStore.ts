@@ -64473,7 +64473,7 @@ const useMapStore = create((set) => ({
       }
     }),
     new FeatureLayer({
-      url: "https://www.geosceneonline.cn/server/rest/services/Hosted/%E5%AE%9E%E6%97%B6_%E5%9C%B0%E5%B8%82%E7%BA%A7%E7%96%AB%E6%83%85%E4%BF%A1%E6%81%AF/FeatureServer"
+      url: "https://www.geosceneonline.cn/server/rest/services/Hosted/%E5%85%AB%E5%8D%81%E5%A4%A9%E7%8E%AF%E6%B8%B8%E5%9C%B0%E7%90%83%E2%80%94%E2%80%94%E8%88%AA%E7%BA%BF/FeatureServer/0"
     })
   ],
 
