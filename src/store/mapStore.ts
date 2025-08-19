@@ -4,7 +4,8 @@ import WebTileLayer from '@geoscene/core/layers/WebTileLayer';
 import VectorTileLayer from '@geoscene/core/layers/VectorTileLayer';
 import FeatureLayer from '@geoscene/core/layers/FeatureLayer';
 import { create } from 'zustand';
-
+import Map from '@geoscene/core/Map'
+import WFSLayer from '@geoscene/core/layers/WFSLayer';
 interface MapState {
   basemap: any;
 }
@@ -64431,65 +64432,80 @@ const wmtsLayer = [
     id: "empty-basemap",
   }
 ]
+
+
+const map = new Map({ // 创建Map实例
+  basemap: wmtsLayer[0],
+})
+
 const useMapStore = create((set) => ({
   wmtsLayer,
-  map: {
-    basemap: wmtsLayer[2],
-  },
+  map: map,
   view: {
     center: [116.805, 28.027], // 经度, 纬度
     zoom: 4,
   },
-  layers: [
-    new GeoJSONLayer({
-      title: '成都市',
-      url: 'https://geo.datav.aliyun.com/areas_v3/bound/510100_full.json',
-      popupEnabled: true,
-      renderer: {
-        type: 'simple',
-        symbol: {
-          type: 'simple-fill',
-          color: '#13448280',
-          outline: {
-            color: '#ff8080',
-            width: 2,
-          },
-        },
-      },
-    }),
-    new GeoJSONLayer({
-      title: '全国矿产分别',
-      url: './public/矿产.geojson',
-      // definitionExpression:"规模 = 大型",
-      popupEnabled: true,
-      renderer: {
-        type: 'simple',
-        symbol: {
-          type: 'simple-marker',
-          size: 10,
-          color: '#007eff',
-          outline: null
-        }
-      }
-    }),
-    new FeatureLayer({
-      url: "https://www.geosceneonline.cn/server/rest/services/Hosted/%E5%85%AB%E5%8D%81%E5%A4%A9%E7%8E%AF%E6%B8%B8%E5%9C%B0%E7%90%83%E2%80%94%E2%80%94%E8%88%AA%E7%BA%BF/FeatureServer/0"
-    })
-  ],
-
-
-
-  addLayerToMapAndStore: (layer: any) => {
-    set((state) => {
-      //更新状态
-      return {
-        layers: [...state.layers, layer],
-      };
-    });
+  updateMap:(newMap) => {
+    console.log("updateMap", newMap);
+    
+    set({map: newMap})
   },
+  // layers: [
+  //   new GeoJSONLayer({
+  //     title: '成都市',
+  //     url: 'https://geo.datav.aliyun.com/areas_v3/bound/510100_full.json',
+  //     popupEnabled: true,
+  //     renderer: {
+  //       type: 'simple',
+  //       symbol: {
+  //         type: 'simple-fill',
+  //         color: '#13448280',
+  //         outline: {
+  //           color: '#ff8080',
+  //           width: 2,
+  //         },
+  //       },
+  //     },
+  //   }),
+  //   new GeoJSONLayer({
+  //     title: '全国矿产分别',
+  //     url: './public/矿产.geojson',
+  //     // definitionExpression:"规模 = 大型",
+  //     popupEnabled: true,
+  //     renderer: {
+  //       type: 'simple',
+  //       symbol: {
+  //         type: 'simple-marker',
+  //         size: 10,
+  //         color: '#007eff',
+  //         outline: null
+  //       }
+  //     }
+  //   }),
+  //   new FeatureLayer({
+  //     url: "https://www.geosceneonline.cn/server/rest/services/Hosted/%E5%85%AB%E5%8D%81%E5%A4%A9%E7%8E%AF%E6%B8%B8%E5%9C%B0%E7%90%83%E2%80%94%E2%80%94%E8%88%AA%E7%BA%BF/FeatureServer/0"
+  //   }),
+  //   new WFSLayer({
+  //     url: "/api/geoserver/it.geosolutions/wfs/features",
+  //     // definitionExpression: "created_date = timestamp '2023-07-11T05:54:49.201'"
+  //   })
+  // ],
+
+
+
+  // addLayerToMapAndStore: (layer: any) => {
+  //   set((state) => {
+  //     //更新状态
+  //     return {
+  //       layers: [...state.layers, layer],
+  //     };
+  //   });
+  // },
 
 
   updateViewState: (center: [number, number], zoom: number) => {
+    console.log("updateViewState");
+    
     set({
       view: {
         center,
@@ -64498,13 +64514,13 @@ const useMapStore = create((set) => ({
     });
   },
 
-  updateMapState: (basemap: any) => {
-    set({
-      map: {
-        basemap,
-      }
-    });
-  },
+  // updateMapState: (basemap: any) => {
+  //   set({
+  //     map: {
+  //       basemap,
+  //     }
+  //   });
+  // },
 
 }));
 

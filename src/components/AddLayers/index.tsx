@@ -9,9 +9,10 @@ import {
   CaretDownFilled
 } from '@ant-design/icons';
 import eventBus from "@/utils/eventBus";
-export default function AddLayers({ map }) {
+export default function AddLayers() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState([]);
+  
   useEffect(() => {
     eventBus.on('open-layer-add', () => {
       setIsOpen(true);
@@ -69,15 +70,18 @@ export default function AddLayers({ map }) {
     // Web服务表单
     if (['arcgis-rest', 'geojson-web', 'ogc-wfs', 'ogc-wms', 'ogc-wmts'].includes(selectedKey)) {
       return (
-        <Form layout="vertical">
-          <Form.Item label="服务URL" required>
+        <Form 
+        layout="vertical"
+        form={webServiceForm}
+        >
+          <Form.Item name="url" label="服务URL" required>
             <Input placeholder="请输入服务地址" />
           </Form.Item>
-          <Form.Item label="名称">
+          <Form.Item label="名称" name="name">
             <Input placeholder="自定义图层名称" />
           </Form.Item>
           {selectedKey === 'arcgis-rest' && (
-            <Form.Item label="图层ID">
+            <Form.Item label="图层ID" name="layerId">
               <Input placeholder="可选，如果URL未指定具体图层" />
             </Form.Item>
           )}
