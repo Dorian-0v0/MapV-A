@@ -3,8 +3,7 @@ import GeoJSONLayer from '@geoscene/core/layers/GeoJSONLayer';
 import eventBus from '@/utils/eventBus.js';
 import useMapStore from '@/store/mapStore';
 import './index.less'
-import FeatureLayer from '@geoscene/core/layers/FeatureLayer';
-const MapController = ({ isChanged }) => {
+const MapController = ({ isChanged, map }) => {
     const [isBaseMapVisible, setisBaseMapVisible] = useState(false);
 
     // 监听事件总线
@@ -69,14 +68,10 @@ const MapController = ({ isChanged }) => {
                     }}>
 
                 </button>
-                <button className='geoscene-icon-chat' title="GeoAI交互式工具"
-                    onClick={() => {
-                        eventBus.emit('addLayerInWork', new FeatureLayer({ url: 'https://www.geosceneonline.cn/server/rest/services/Hosted/%E5%85%AB%E5%8D%81%E5%A4%A9%E7%8E%AF%E6%B8%B8%E5%9C%B0%E7%90%83%E2%80%94%E2%80%94%E8%88%AA%E7%BA%BF/FeatureServer' }))
-                    }}
-                >
+                <button className='geoscene-icon-chat' title="GeoAI交互式工具">
 
-            </button>
-        </div >
+                </button>
+            </div>
             <div>
                 图层列表
             </div>
