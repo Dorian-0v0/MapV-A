@@ -13,21 +13,6 @@ export default defineConfig({
   },
   server: {
     port: 2020, // 改为你想要的端口号
-    proxy: {
-      // 代理所有以 /api 开头的请求
-      '/api': {
-        target: 'http://localhost:8000', // 后端服务器地址
-        changeOrigin: true, // 需要虚拟托管站点时添加
-        rewrite: (path) => path.replace(/^\/api/, ''), // 可选，重写路径
-        // 如果需要，可以添加更多配置如 secure, headers 等
-      },
-      // 可以添加更多代理规则
-      // '/another-api': {
-      //   target: 'http://another-backend-server.com',
-      //   changeOrigin: true,
-      //   rewrite: (path) => path.replace(/^\/another-api/, ''),
-      // }
-    }
   },
   resolve: {
     alias: {
