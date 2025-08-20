@@ -5,7 +5,7 @@ import Sider from "antd/es/layout/Sider";
 import { use, useEffect, useState } from "react";
 import "./index.less"
 import { CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import eventBus from "@/utils/eventBus";
+import {eventBus} from '@/utils/eventBus'
 
 // 图层过滤
 const LayerFilter = ({ map }) => {

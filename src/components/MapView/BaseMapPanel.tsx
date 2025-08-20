@@ -2,8 +2,7 @@
 import React, { useEffect } from 'react';
 import { Button, Card } from 'antd';
 import { CloseOutlined, PlusOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import eventBus from '@/utils/eventBus.js';
-
+import {eventBus} from '@/utils/eventBus'
 const BaseMapPanel = () => {
 
   // useEffect(() => {

@@ -8,13 +8,14 @@ import ScaleBar from '@geoscene/core/widgets/ScaleBar'
 import { weatherService } from '@/api/MapServer'
 import Home from "@geoscene/core/widgets/Home";
 import useMapStore from '@/store/mapStore'
-import eventBus from '@/utils/eventBus.js';
+import {eventBus} from '@/utils/eventBus'
 import Query from '@geoscene/core/rest/support/Query';
 import "./index.less"
 import BaseMapPanel from './BaseMapPanel';
 import MapBottom from '../MapBottom';
 import LayerFilter from '../LayerFilter';
 import AddLayers from '../AddLayers';
+import { message } from 'antd';
 interface MapViewProps {
     type?: string;
 }
@@ -92,7 +93,6 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                     map.add(layer);
                     mapView.whenLayerView(layer).then(layerView => {
                         layer.popupTemplate = {
-                            title: "{name}",
                             highlightEable: true,
                             content: [{
                                 type: "fields",
@@ -103,9 +103,9 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                                 }))
                             }]
                         };
-                    });
-                    // addLayerToMapAndStore(layer);
-                    // updateMap(map)
+                        message.success('添加成功')
+                        eventBus.emit('set-button-loading')
+                    })
                 });
 
 
@@ -136,7 +136,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
 
         return () => {
             console.log("地图销毁", mapView);
-            
+
             const center = [mapView?.center.longitude, mapView?.center.latitude] as [number, number];
             const zoom = mapView?.zoom;
             updateViewState(center, zoom);

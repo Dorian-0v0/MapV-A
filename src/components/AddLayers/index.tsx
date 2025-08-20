@@ -1,24 +1,77 @@
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
-import React, { useEffect, useState } from 'react'
-import { Modal, Layout, Button, Tree, Menu, Dropdown, Tabs, Form, Input, Select, Upload } from 'antd';
+import { useEffect, useState } from 'react'
+import { Modal, Button, Tree, Form, Input, Upload, message } from 'antd';
 import {
   FolderAddOutlined,
   FileOutlined,
   GlobalOutlined,
   CaretDownFilled
 } from '@ant-design/icons';
-import eventBus from "@/utils/eventBus";
+import {eventBus} from '@/utils/eventBus'
+import Layer from "@geoscene/core/layers/Layer.js";
+import useMapStore from '@/store/mapStore';
 export default function AddLayers() {
+  const { map, updateMap, view, updateViewState, wmtsLayer } = useMapStore();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState([]);
-  
+  const [webUrlForm] = Form.useForm(); // 创建表单实例
+  const [buttonLoading, setButtonLoading] = useState(false);
+  console.log("AddLayers////", map);
+
+
+
+  // 添加不同类型的图层
+  const addDifferentLayers = async (value) => {
+    setButtonLoading(true);
+    const { type, url, name, id } = value;
+    console.log("添加图层", type, url, name, id);
+    try {
+      switch (type) {
+        case 'arcgis-rest':
+          const layer = await Layer.fromGeoSceneServerUrl({ url });
+          console.log("添加图层成功", layer);
+          if (name) {
+            layer.title = name;
+          }
+          eventBus.emit('addLayerInWork', layer);
+          break;
+        case 'geojson-web':
+          // 添加处理 geojson-web 类型图层的逻辑
+          console.log("处理 geojson-web 类型图层");
+          break;
+        case 'ogc-wfs':
+          // 添加处理 ogc-wfs 类型图层的逻辑
+          console.log("处理 ogc-wfs 类型图层");
+          break;
+        default:
+          console.log("未知类型图层", type, url, name, id);
+      }
+    } catch (error) {
+      console.error("图层加载失败", error);
+      message.error("图层加载失败");
+      setButtonLoading(false);
+    }
+  };
+  // 处理表单提交
+  const handleSubmit = (values) => {
+    console.log('提交的数据:', values);
+    // 在这里可以将数据发送到后端
+  };
+
   useEffect(() => {
     eventBus.on('open-layer-add', () => {
+            console.log("关闭open-layer-add");
       setIsOpen(true);
     })
+    eventBus.on('set-button-loading', () => {
+      setButtonLoading(false);
+    })
     return () => {
+      console.log("关闭open-layer-add");
+      
       setIsOpen(false);
+      setButtonLoading(false);
       eventBus.removeAllListeners();
     }
   }, [])
@@ -57,41 +110,59 @@ export default function AddLayers() {
   });
 
 
-  
+
+
+
+
+
+
+
 
   // 渲染内容区域根据选择的树节点
   const renderContent = () => {
     if (!selectedKeys.length) {
       return <div style={{ padding: 24, color: '#999' }}>请从左侧选择数据源类型</div>;
     }
-
     const selectedKey = selectedKeys[0];
-
     // Web服务表单
     if (['arcgis-rest', 'geojson-web', 'ogc-wfs', 'ogc-wms', 'ogc-wmts'].includes(selectedKey)) {
       return (
-        <Form 
-        layout="vertical"
-        form={webServiceForm}
+        <Form
+          form={webUrlForm}
+          layout="vertical"
+        // onFinish={handleSubmit} // 绑定表单提交事件
         >
-          <Form.Item name="url" label="服务URL" required>
+          <Form.Item name="serviceurl" label="服务URL" required>
             <Input placeholder="请输入服务地址" />
           </Form.Item>
-          <Form.Item label="名称" name="name">
+          <Form.Item label="名称" name="servicename">
             <Input placeholder="自定义图层名称" />
           </Form.Item>
           {selectedKey === 'arcgis-rest' && (
-            <Form.Item label="图层ID" name="layerId">
+            <Form.Item label="图层ID" name="layerid">
               <Input placeholder="可选，如果URL未指定具体图层" />
             </Form.Item>
           )}
           {['ogc-wms', 'ogc-wmts'].includes(selectedKey) && (
-            <Form.Item label="图层名称">
+            <Form.Item label="图层名称" name="layername">
               <Input placeholder="WMS/WMTS图层名称" />
             </Form.Item>
           )}
           <Form.Item>
-            <Button type="primary">连接</Button>
+            <Button loading={buttonLoading} type="primary" onClick={async () => {
+
+              console.log("提交数据", {
+                type: selectedKey,
+                url: webUrlForm.getFieldValue('serviceurl'),
+                name: webUrlForm.getFieldValue('servicename'),
+              });
+
+              await addDifferentLayers({
+                type: selectedKey,
+                url: webUrlForm.getFieldValue('serviceurl'),
+                name: webUrlForm.getFieldValue('servicename'),
+              })
+            }}>{buttonLoading ? "添加图层中" : "添加图层"}</Button>
           </Form.Item>
         </Form>
       );
@@ -144,7 +215,7 @@ export default function AddLayers() {
               </Form.Item>
             </Form.Item>
           )}
-          <Button type="primary">上传</Button>
+          <Button type="primary" >上传</Button>
         </Form>
       );
     }
@@ -165,33 +236,26 @@ export default function AddLayers() {
         display: 'flex'
       }}
       title="添加图层"
-      closable={{ 'aria-label': 'Custom Close Button' }}
       open={isOpen}
-      onOk={() => {
-        setIsOpen(true);
-      }}
-      onCancel={() => {
-        setIsOpen(false);
-      }}
+
+      onCancel={() => setIsOpen(false)}
+      okButtonProps={{ style: { display: 'none' } }} // 隐藏确认按钮
+      cancelText="关闭" // 将取消按钮文本改为中文
+
     >
       <Sider
         style={{
           height: '100%',
-          backgroundColor: '#ffffff',
+          backgroundColor: '#ffffffff',
           overflow: 'hiden'
         }}
         width={180}
       >
         <div>
-          <style>
-            {`
-          .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
-            background-color: #4d6bfe !important;
-            color: white !important;
-          }
-        `}
-          </style>
           <Tree
+            style={{
+              backgroundColor: '#aea4a4ff',
+            }}
             switcherIcon={<CaretDownFilled style={{ marginRight: '0px' }} />}
             showIcon
             expandedKeys={expandedKeys}
