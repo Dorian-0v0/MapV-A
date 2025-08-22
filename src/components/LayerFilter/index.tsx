@@ -219,8 +219,6 @@ const LayerFilter = ({ map }) => {
         return () => {
             setIsModalOpen(false);
             console.log('ziid');
-
-            eventBus.removeAllListeners();
         }
     }, [])
 

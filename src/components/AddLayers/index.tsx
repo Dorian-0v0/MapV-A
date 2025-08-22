@@ -8,16 +8,16 @@ import {
   GlobalOutlined,
   CaretDownFilled
 } from '@ant-design/icons';
-import {eventBus} from '@/utils/eventBus'
+import { eventBus } from '@/utils/eventBus'
 import Layer from "@geoscene/core/layers/Layer.js";
 import useMapStore from '@/store/mapStore';
-export default function AddLayers() {
-  const { map, updateMap, view, updateViewState, wmtsLayer } = useMapStore();
+export default function AddLayers(props) {
+  const { map } = props;
+  const { updateMap, view, updateViewState, wmtsLayer } = useMapStore();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [webUrlForm] = Form.useForm(); // 创建表单实例
   const [buttonLoading, setButtonLoading] = useState(false);
-  console.log("AddLayers////", map);
 
 
 
@@ -30,11 +30,12 @@ export default function AddLayers() {
       switch (type) {
         case 'arcgis-rest':
           const layer = await Layer.fromGeoSceneServerUrl({ url });
-          console.log("添加图层成功", layer);
+
           if (name) {
             layer.title = name;
           }
           eventBus.emit('addLayerInWork', layer);
+          
           break;
         case 'geojson-web':
           // 添加处理 geojson-web 类型图层的逻辑
@@ -61,7 +62,7 @@ export default function AddLayers() {
 
   useEffect(() => {
     eventBus.on('open-layer-add', () => {
-            console.log("关闭open-layer-add");
+      console.log("关闭open-layer-add");
       setIsOpen(true);
     })
     eventBus.on('set-button-loading', () => {
@@ -69,10 +70,9 @@ export default function AddLayers() {
     })
     return () => {
       console.log("关闭open-layer-add");
-      
+
       setIsOpen(false);
       setButtonLoading(false);
-      eventBus.removeAllListeners();
     }
   }, [])
   // 树形数据

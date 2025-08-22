@@ -1,9 +1,8 @@
 import Basemap from '@geoscene/core/Basemap';
-import GeoJSONLayer from '@geoscene/core/layers/GeoJSONLayer';
 import WebTileLayer from '@geoscene/core/layers/WebTileLayer';
 import VectorTileLayer from '@geoscene/core/layers/VectorTileLayer';
-import FeatureLayer from '@geoscene/core/layers/FeatureLayer';
 import { create } from 'zustand';
+import Map from '@geoscene/core/Map'
 
 interface MapState {
   basemap: any;
@@ -64433,59 +64432,12 @@ const wmtsLayer = [
 ]
 const useMapStore = create((set) => ({
   wmtsLayer,
-  map: {
-    basemap: wmtsLayer[2],
-  },
+  map: new Map({
+    basemap: wmtsLayer[1],
+  }),
   view: {
     center: [116.805, 28.027], // 经度, 纬度
     zoom: 4,
-  },
-  layers: [
-    new GeoJSONLayer({
-      title: '成都市',
-      url: 'https://geo.datav.aliyun.com/areas_v3/bound/510100_full.json',
-      popupEnabled: true,
-      renderer: {
-        type: 'simple',
-        symbol: {
-          type: 'simple-fill',
-          color: '#13448280',
-          outline: {
-            color: '#ff8080',
-            width: 2,
-          },
-        },
-      },
-    }),
-    new GeoJSONLayer({
-      title: '全国矿产分别',
-      url: './public/矿产.geojson',
-      // definitionExpression:"规模 = 大型",
-      popupEnabled: true,
-      renderer: {
-        type: 'simple',
-        symbol: {
-          type: 'simple-marker',
-          size: 10,
-          color: '#007eff',
-          outline: null
-        }
-      }
-    }),
-    new FeatureLayer({
-      url: "https://www.geosceneonline.cn/server/rest/services/Hosted/%E5%85%AB%E5%8D%81%E5%A4%A9%E7%8E%AF%E6%B8%B8%E5%9C%B0%E7%90%83%E2%80%94%E2%80%94%E8%88%AA%E7%BA%BF/FeatureServer/0"
-    })
-  ],
-
-
-
-  addLayerToMapAndStore: (layer: any) => {
-    set((state) => {
-      //更新状态
-      return {
-        layers: [...state.layers, layer],
-      };
-    });
   },
 
 
@@ -64498,13 +64450,7 @@ const useMapStore = create((set) => ({
     });
   },
 
-  updateMapState: (basemap: any) => {
-    set({
-      map: {
-        basemap,
-      }
-    });
-  },
+  updateMapState: (newmap: any) => set({ map: newmap }),
 
 }));
 

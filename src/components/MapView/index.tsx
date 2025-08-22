@@ -5,10 +5,10 @@ import Fullscreen from '@geoscene/core/widgets/Fullscreen'
 import BasemapGallery from '@geoscene/core/widgets/BasemapGallery'
 import Basemap from "@geoscene/core/Basemap";
 import ScaleBar from '@geoscene/core/widgets/ScaleBar'
-import {weatherService} from '@/api/MapServer'
+import { weatherService } from '@/api/MapServer'
 import Home from "@geoscene/core/widgets/Home";
 import useMapStore from '@/store/mapStore'
-import {eventBus} from '@/utils/eventBus'
+import { eventBus } from '@/utils/eventBus'
 import Query from '@geoscene/core/rest/support/Query';
 import "./index.less"
 import BaseMapPanel from './BaseMapPanel';
@@ -17,43 +17,35 @@ import LayerFilter from '../LayerFilter';
 import AddLayers from '../AddLayers';
 import { message } from 'antd';
 interface MapViewProps {
-    map: any;
-    view?: any;
-    layers?: any;
     type?: string;
 }
 
-const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type }) => {
-    const mapViewRef = useRef<any>(null);
+const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
     const mapDivRef = useRef<HTMLDivElement>(null);
-    const { addLayerToMapAndStore, updateViewState, updateMapState, wmtsLayer } = useMapStore();
+    const { map, updateViewState, updateMapState, wmtsLayer, view } = useMapStore();
 
     // 新增状态：追踪地图是否加载完成
     const [isMapReady, setIsMapReady] = useState(false);
     const [mapViewInstance, setMapViewInstance] = useState<any>(null);
-    const [webMapInstance, setWebMapInstance] = useState<any>(null);
 
 
     useEffect(() => {
-        console.log("layers  pp", layers, map);
+        console.log("layers  pp", map);
         if (!mapDivRef.current) return;
 
-        // 初始化地图
-        const webMap = new Map(map);
 
 
         // 初始化视图
         const mapView = new MapView({
             container: mapDivRef.current,
-            map: webMap,
+            map: map,
             ...view
         });
 
-        mapViewRef.current = mapView;
         mapView.ui.remove("attribution");
 
         mapView.when(() => {
-            console.log("mapView ready", webMap);
+            console.log("mapView ready", map);
 
             // 添加比例尺控件
             mapView.ui.add(new ScaleBar({
@@ -74,32 +66,34 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
                     source: wmtsLayer
                 });
                 // 底图控件
-                 mapView.ui.add(homeWidget, "top-left");
-                
-                // 加载所有图层
-                webMap.addMany(layers);
-                layers.forEach(ly => {
-                    mapView.whenLayerView(ly).then(layerView => {
-                        ly.popupTemplate = {
-                            title: '{name}',
-                            highlightEable: true,
-                            content: [{
-                                type: "fields",
-                                fieldInfos: (ly.fields || []).map(field => ({
-                                    fieldName: field.name,
-                                    label: field.name,
-                                    visible: true
-                                }))
-                            }]
-                        };
-                    });
-                });
+                mapView.ui.add(homeWidget, "top-left");
 
-               
+                // 加载所有图层
+                // map.addMany(layers);
+                // layers.forEach(ly => {
+                //     mapView.whenLayerView(ly).then(layerView => {
+                //         ly.popupTemplate = {
+                //             title: '{name}',
+                //             highlightEable: true,
+                //             content: [{
+                //                 type: "fields",
+                //                 fieldInfos: (ly.fields || []).map(field => ({
+                //                     fieldName: field.name,
+                //                     label: field.name,
+                //                     visible: true
+                //                 }))
+                //             }]
+                //         };
+                //     });
+                // });
+
+
 
                 // 添加图层
                 eventBus.on('addLayerInWork', (layer: any) => {
-                    webMap.add(layer);
+                    console.log("                    message.success('添加成功')");
+
+                    map.add(layer);
                     mapView.whenLayerView(layer).then(layerView => {
                         layer.popupTemplate = {
                             highlightEable: true,
@@ -112,9 +106,10 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
                                 }))
                             }]
                         };
-                        message.success('添加成功')
                         eventBus.emit('set-button-loading')
+
                     })
+       
                 });
 
 
@@ -128,7 +123,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
                         console.log('getWeatheewwewwwwr')
                         const res = await weatherService(`${mapView.center.latitude},${mapView.center.longitude}`);
                         console.log("天气查询结果：", res);
-                        
+
                         return res
                     } else {
                         return "无信息"
@@ -140,7 +135,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
             // 标记地图已加载完成
             setIsMapReady(true);
             setMapViewInstance(mapView);
-            setWebMapInstance(webMap);
+            updateMapState(map)
         });
 
         return () => {
@@ -149,12 +144,9 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
             const center = [mapView?.center.longitude, mapView?.center.latitude] as [number, number];
             const zoom = mapView?.zoom;
             updateViewState(center, zoom);
-            // updateMap(mapView)
             if (mapDivRef) {
                 console.log("地图销毁");
-                mapDivRef.current = null;
             }
-            eventBus.removeAllListeners();
         };
     }, []);
 
@@ -174,8 +166,8 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
                     margin: '0',
                 }}
             />
-            <LayerFilter map={webMapInstance}></LayerFilter>
-                <AddLayers map={webMapInstance}></AddLayers>
+            <LayerFilter map={map}></LayerFilter>
+            <AddLayers map={map}></AddLayers>
             <BaseMapPanel />
 
             {/* 只在 mapView 加载完成后渲染 MapBottom */}
@@ -183,7 +175,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ map, view = {}, layers, type
             {isMapReady && (
                 <MapBottom
                     view={mapViewInstance}
-                    baseMapName={webMapInstance?.basemap?.title || '未知'}
+                    baseMapName={map?.basemap?.title || '未知'}
                 />
             )}
 

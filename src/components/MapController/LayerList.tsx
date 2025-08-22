@@ -1,9 +1,9 @@
 import useMapStore from '@/store/mapStore';
 import React, { useEffect, useState } from 'react';
-import { List, Switch, Button, Card, Collapse } from 'antd';
+import { List, Switch, Button, Card, Collapse, message } from 'antd';
 import { EyeOutlined, EyeInvisibleOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import Legend from '@geoscene/core/widgets/Legend';
-import {eventBus} from '@/utils/eventBus'
+import { eventBus } from '@/utils/eventBus'
 
 const { Panel } = Collapse;
 
@@ -22,31 +22,27 @@ export default function LayerList() {
     const [layersChange, setLayersChange] = useState(false);
     useEffect(() => {
         eventBus.on('set-button-loading', () => {
-            setLayersChange(true);
+            setLayersChange(!layersChange);
         })
-        return () => {
-            eventBus.removeAllListeners();
-        }
-
     }, []);
 
     // 初始化获取所有图层
     useEffect(() => {
-        if (!map) return;
+        // if(!layersChange)return
+        console.log("dewwwwwwwwwwww", map.layers?.items, map);
+
         const allLayers = map.layers?.items
         setLayers(allLayers);
-        console.log('ma||||||||||||||||\\p', map);
-
-    }, [map.layers.length]);
+        // setLayersChange(false);
+    }, [map.layers?.length]);
 
     // 切换图层可见性
-    const toggleLayerVisibility = (layerId: string, visible: boolean) => {
+    const toggleLayerVisibility = (layerId: string) => {
         const layer = map?.findLayerById(layerId);
+        console.log("layer", layer);
+
         if (layer) {
-            layer.visible = visible;
-            setLayers(prev => prev.map(l =>
-                l.id === layerId ? { ...l, visible } : l
-            ));
+            layer.visible = !layer.visible;
         }
     };
 
@@ -68,7 +64,7 @@ export default function LayerList() {
     };
 
     return (
-        <div style={{ padding: "0px 8px"}}>
+        <div style={{ padding: "0px 8px" }}>
             <List
                 dataSource={layers}
                 renderItem={(layer) => (
@@ -77,26 +73,41 @@ export default function LayerList() {
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'space-between',
-                                alignItems: 'center',
-                                marginBottom: 8,
+
+                                marginBottom: 6,
                                 fontSize: 11,
-                                // fontFamily: "fantasy"
                                 border: '1px solid #ccc',
-                                padding: '4px 8px',
-                             
-                                background: '#f6eaeaff',
-                    
-                                fontFamily: 'fantasy'
-                            
+                                padding: '10px 3px',
+
+                                background: '#eaeef6ff',
+                                fontWeight: 'bold'
+                                // fontFamily: 'UnifrakturMaguntia cursive',
+                                // textShadow: "1px 0 0 currentColor, 0.5px 0.5px 0 currentColor"
+
                             }}>
-                                <span>{layer.title}</span>
+                                <div style={{
+                                        // margin: '0 5px',
+                                        width: '60%'
+}}>
+                                    <span
+                                        style={{
+                                            whiteSpace: "normal",
+                                            wordWrap: "break-word",
+                                            overflowWrap: "break-word",
+                                            flex: 1,
+                                            minWidth: 0
+                                        }}
+                                    >{layer.title}</span>
+                                </div>
+
                                 <div>
                                     <Switch
-                                        checked={layer.visible}
-                                        onChange={(checked) => toggleLayerVisibility(layer.id, checked)}
+                                        defaultChecked
+                                        // checked={layer.visible}
+                                        onChange={(checked) => toggleLayerVisibility(layer.id)}
                                         checkedChildren={<EyeOutlined />}
                                         unCheckedChildren={<EyeInvisibleOutlined />}
-                                        style={{ marginRight: 8 }}
+                                        // style={{ marginRight: 0 }}
                                         size='small'
                                     />
                                     <Button
@@ -139,9 +150,10 @@ export default function LayerList() {
                             </Collapse>
                         </div>
                     </List.Item>
-                )}
+                )
+                }
             />
-        </div>
+        </div >
 
 
     );
