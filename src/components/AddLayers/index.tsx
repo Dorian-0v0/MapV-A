@@ -13,7 +13,7 @@ import Layer from "@geoscene/core/layers/Layer.js";
 import useMapStore from '@/store/mapStore';
 export default function AddLayers(props) {
   const { map } = props;
-  const { updateMap, view, updateViewState, wmtsLayer } = useMapStore();
+  // const { updateMap, view, updateViewState, wmtsLayer } = useMapStore();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [webUrlForm] = Form.useForm(); // 创建表单实例
@@ -27,6 +27,7 @@ export default function AddLayers(props) {
     const { type, url, name, id } = value;
     console.log("添加图层", type, url, name, id);
     try {
+      let layer;
       switch (type) {
         case 'arcgis-rest':
           const layer = await Layer.fromGeoSceneServerUrl({ url });
@@ -34,8 +35,9 @@ export default function AddLayers(props) {
           if (name) {
             layer.title = name;
           }
-          eventBus.emit('addLayerInWork', layer);
-          
+          map.add(layer)
+          layer.serviceType = 'ArcGIS-Rest-API';
+
           break;
         case 'geojson-web':
           // 添加处理 geojson-web 类型图层的逻辑
@@ -48,9 +50,14 @@ export default function AddLayers(props) {
         default:
           console.log("未知类型图层", type, url, name, id);
       }
+      eventBus.emit('set-button-loading');
+      eventBus.emit('addLayerInWork', layer);
+      message.success('添加成功')
+      setButtonLoading(false);
     } catch (error) {
       console.error("图层加载失败", error);
       message.error("图层加载失败");
+    } finally {
       setButtonLoading(false);
     }
   };
@@ -65,9 +72,9 @@ export default function AddLayers(props) {
       console.log("关闭open-layer-add");
       setIsOpen(true);
     })
-    eventBus.on('set-button-loading', () => {
-      setButtonLoading(false);
-    })
+
+
+
     return () => {
       console.log("关闭open-layer-add");
 

@@ -91,9 +91,6 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
 
                 // 添加图层
                 eventBus.on('addLayerInWork', (layer: any) => {
-                    console.log("                    message.success('添加成功')");
-
-                    map.add(layer);
                     mapView.whenLayerView(layer).then(layerView => {
                         layer.popupTemplate = {
                             highlightEable: true,
@@ -106,10 +103,10 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                                 }))
                             }]
                         };
-                        eventBus.emit('set-button-loading')
-
+                    }).catch(error => {
+                        message.error(`无法展示弹框${error.message}`);
                     })
-       
+
                 });
 
 
