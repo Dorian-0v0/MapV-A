@@ -4,8 +4,9 @@ import Point from '@geoscene/core/geometry/Point'; // 补充 Point 的导入
 import type MapView from '@geoscene/core/views/MapView';
 import { inverseGeoService, weatherService } from '@/api/MapServer';
 import "./index.less"
-import { notification, Switch, Tooltip } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { Button, notification, Switch, Tooltip } from 'antd';
+import { EnvironmentOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { GaodeIcon } from '@/assets/icons';
 
 // 定义 props 类型
 interface MapBottomProps {
@@ -275,6 +276,16 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
                 </span>
                 <QuestionCircleOutlined style={{ color: '#1890ff', cursor: 'pointer' }} />
             </Tooltip>
+            <Button
+                style={{
+                    marginLeft: 10,
+                    height: 20
+                }}
+                type="primary"
+                icon={<GaodeIcon />}
+            >
+                高德地图工具箱
+            </Button>
 
         </div>
     );

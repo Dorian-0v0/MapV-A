@@ -1,12 +1,10 @@
 import useMapStore from '@/store/mapStore';
 import React, { useEffect, useState } from 'react';
-import { List, Switch, Button, Card, Collapse, message, Modal, Tabs, Table, Descriptions } from 'antd';
-import { EyeOutlined, EyeInvisibleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { List, Switch, Button, Card, Collapse, message, Modal, Tabs, Table, Descriptions, Dropdown, Menu } from 'antd';
+import { EyeOutlined, EyeInvisibleOutlined, InfoCircleOutlined, TableOutlined, DeleteOutlined, FullscreenExitOutlined, MoreOutlined, ProfileOutlined, BgColorsOutlined, EditOutlined, ExportOutlined } from '@ant-design/icons';
 import Legend from '@geoscene/core/widgets/Legend';
 import { eventBus } from '@/utils/eventBus'
 import "./index.less"
-
-const { Panel } = Collapse;
 
 interface LayerInfo {
     id: string;
@@ -39,21 +37,20 @@ export default function LayerList() {
 
         setLayers(map.layers?._items);
 
-    }, [map.layers?.length]);
+    }, [map.layers?.length, layersChange]);
 
     // 解析layer的名字
     const getLayerName = (item) => {
         const title = item.title;
-        if (title?.[0] === '%') {
-            const name = item?.sourceJSON?.name;
-            if (name !== undefined && name !== null) return name;
+        // if (title?.[0] === '%') {
+        //     const name = item?.sourceJSON?.name;
+        //     if (name !== undefined && name !== null) return name;
+        //     console.log("title", decodeURIComponent(title));
 
-            try {
-                return decodeURIComponent(title);
-            } catch (e) {
-                return title;
-            }
-        }
+        //         return decodeURIComponent(title);
+
+        // }
+        console.log("title", decodeURIComponent(title));
         return title;
     };
 
@@ -65,9 +62,9 @@ export default function LayerList() {
     const toggleLayerVisibility = (layer) => {
         // const layer = map?.findLayerById(layerId);
         console.log("layer", layer);
-
         if (layer) {
             layer.visible = !layer.visible;
+            setLayersChange(prev => !prev)
         }
     };
 
@@ -76,90 +73,98 @@ export default function LayerList() {
         setSelectLayer(layer)
     };
 
+    // 从map里移除layer
+    const removeLayer = (layer) => {
+        map.remove(layer);
+        setLayersChange(prev => !prev)
+    };
+
     return (
         <div style={{ padding: "0px 5px", maxHeight: "calc(100vh - 180px)", overflowY: "auto" }}>
             <List
                 dataSource={layers}
                 renderItem={(layer) => (
                     <List.Item key={layer.id}>
-                        <div style={{ width: '100%' }}>
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                fontSize: 11,
-                                border: '1px solid #ccc',
-                                padding: '10px 3px',
-
-                                background: '#eaeef6ff',
-                                fontWeight: 'bold'
-                                // fontFamily: 'UnifrakturMaguntia cursive',
-                                // textShadow: "1px 0 0 currentColor, 0.5px 0.5px 0 currentColor"
-
-                            }}>
-                                <div style={{
-                                    // margin: '0 5px',
-                                    width: '60%'
-                                }}>
-                                    <span
-                                        style={{
-                                            whiteSpace: "normal",
-                                            wordWrap: "break-word",
-                                            overflowWrap: "break-word",
-                                        }}
-                                    >{getLayerName(layer)}</span>
-                                </div>
-
-                                <div>
-                                    <Switch
-                                        defaultChecked
-                                        style={{
-                                            top: -3
-                                        }}
-                                        // checked={layer.visible}
-                                        onChange={() => toggleLayerVisibility(layer)}
-                                        checkedChildren={<EyeOutlined />}
-                                        unCheckedChildren={<EyeInvisibleOutlined />}
-                                        size='small'
-                                    />
-                                    <Button
-                                        type="text"
-                                        icon={<InfoCircleOutlined />}
-                                        onClick={() => checkLayerInfo(layer)}
-                                    />
-                                </div>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column', // 改为垂直排列
+                            fontSize: 11,
+                            border: '1px solid #ccc',
+                            padding: '5px 2px',
+                            width: '100%',
+                            background: '#eaeef6ff',
+                            fontWeight: 'bold'
+                        }}>
+                            {/* 图层名称 - 顶部 */}
+                            <div style={{ width: '100%' }}>
+                                <span>{getLayerName(layer)}</span>
                             </div>
 
-                            <Collapse
-                                activeKey={activeKey}
-                                onChange={setActiveKey}
-                                bordered={false}
-                                ghost
-                            >
-                                <Panel
-                                    key={layer.id}
-                                    header={null}
-                                    showArrow={false}
-                                    style={{
-                                        display: layer.legendVisible ? 'block' : 'none',
-                                        padding: 0
+                            {/* 按钮组 - 底部 */}
+                            <div style={{
+                                width: '100%',
+                                // textAlign: 'center', // 按钮居中
+                                marginTop: 5 // 添加顶部间距
+                            }}>
+                                <Button
+                                    className='btn-group'
+                                    type="text"
+                                    title="查看图层属性"
+                                    // size='small'
+                                    icon={layer.visible == true ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                                    onClick={() => toggleLayerVisibility(layer)}
+                                />
+                                <Button
+                                    type="text"
+                                    className='btn-group'
+                                    title="查看图层属性"
+                                    icon={<ProfileOutlined />}
+                                    onClick={() => checkLayerInfo(layer)}
+                                />
+                                <Button
+                                    className='btn-group'
+                                    type="text"
+                                    title="切换属性表"
+                                    icon={<TableOutlined />}
+                                    onClick={() => checkLayerInfo(layer)}
+                                />
+                                <Button
+                                    className='btn-group'
+                                    type="text"
+                                    title="删除"
+                                    icon={<DeleteOutlined />}
+                                    onClick={() => {
+                                        removeLayer(layer)
                                     }}
-                                >
-                                    <div
-                                        id={`legend-${layer.id}`}
-                                        style={{
-                                            background: '#fff',
-                                            padding: '8px',
-                                            borderRadius: 4,
-                                            marginTop: 8
-                                        }}
+                                />
+                                <Button
+                                    className='btn-group'
+                                    type="text"
+                                    title="缩放至图层"
+                                    icon={<FullscreenExitOutlined />}
+                                    onClick={() => {
+                                        // 使用 goTo 方法缩放到该范围
+                                        eventBus.emit('map_zoomToExtent', layer.fullExtent)
+                                    }}
+                                />
+                                <Dropdown overlay={
+                                    <Menu>
+                                        <Menu.Item key="1" onClick={() => console.log('查看图例')} icon={<BgColorsOutlined />}>查看图例</Menu.Item>
+                                        <Menu.Item key="2" onClick={() => console.log('要素编辑')} icon={<EditOutlined />}>要素编辑</Menu.Item>
+                                        <Menu.Item key="3" onClick={() => console.log('数据导出')} icon={<ExportOutlined />}>数据导出</Menu.Item>
+                                    </Menu>
+                                } trigger={['click']}>
+                                    <Button
+                                        className="btn-group"
+                                        type="text"
+                                        title="更多操作"
+                                        icon={<MoreOutlined />}
                                     />
-                                    <LegendComponent
-                                        layer={layer.layer}
-                                        containerId={`legend-${layer.id}`}
-                                    />
-                                </Panel>
-                            </Collapse>
+                                </Dropdown>
+                            </div>
                         </div>
+
+
                     </List.Item>
                 )
                 }
@@ -243,8 +248,8 @@ export default function LayerList() {
                                         justifyContent: 'space-between',
                                         alignItems: 'center'
                                     }}>
-                                        <span style={{ transform: 'translateY(-100%)' }}>{selectLayer?.sourceJSON?.extent?.xmin?.toFixed(6) || '未知'}</span>
-                                        <span style={{ transform: 'translateY(-100%)' }}>{selectLayer?.sourceJSON?.extent?.xmax?.toFixed(6) || '未知'}</span>
+                                        <span style={{ transform: 'translateY(-100%)' }}>Xmin:{selectLayer?.sourceJSON?.extent?.xmin?.toFixed(6) || '未知'}</span>
+                                        <span style={{ transform: 'translateY(-100%)' }}>Xmax:{selectLayer?.sourceJSON?.extent?.xmax?.toFixed(6) || '未知'}</span>
                                     </div>
 
                                     {/* 垂直线 */}
@@ -258,10 +263,10 @@ export default function LayerList() {
                                         display: 'flex',
                                         flexDirection: 'column',
                                         justifyContent: 'space-between',
-                                        alignItems: 'left'
+                                        alignItems: 'center'
                                     }}>
-                                        <span>{selectLayer?.sourceJSON?.extent?.ymax?.toFixed(6) || '未知'}</span>
-                                        <span>{selectLayer?.sourceJSON?.extent?.ymin?.toFixed(6) || '未知'}</span>
+                                        <span>Ymax:{selectLayer?.sourceJSON?.extent?.ymax?.toFixed(6) || '未知'}</span>
+                                        <span>Ymin:{selectLayer?.sourceJSON?.extent?.ymin?.toFixed(6) || '未知'}</span>
                                     </div>
 
                                     {/* 中心点 */}
@@ -299,8 +304,6 @@ export default function LayerList() {
                                     <Descriptions.Item label="几何类型">{selectLayer?.sourceJSON?.geometryType || '未知'}</Descriptions.Item>
                                     <Descriptions.Item style={{ borderRadius: 0 }} label="地图数据源类型">{selectLayer?.serviceType || '未知'}</Descriptions.Item>
                                     {/* 接下来展示所有字段和字段类型*/}
-
-
                                 </Descriptions>
                             </div>
 
@@ -309,7 +312,7 @@ export default function LayerList() {
                     </Tabs>
                 </Modal>
             )
-            };
+            }
         </div >
 
 

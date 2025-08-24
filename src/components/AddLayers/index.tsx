@@ -30,7 +30,7 @@ export default function AddLayers(props) {
       let layer;
       switch (type) {
         case 'arcgis-rest':
-          const layer = await Layer.fromGeoSceneServerUrl({ url });
+          layer = await Layer.fromGeoSceneServerUrl({ url });
 
           if (name) {
             layer.title = name;

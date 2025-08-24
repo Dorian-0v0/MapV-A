@@ -1,1 +1,1 @@
-export  {GeoSceneMapIcon, LoGoIcon, AvatarIcon} from './custom';
+export  {GeoSceneMapIcon, LoGoIcon, AvatarIcon, GaodeIcon} from './custom';

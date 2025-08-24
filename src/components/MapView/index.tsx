@@ -106,8 +106,11 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                     }).catch(error => {
                         message.error(`无法展示弹框${error.message}`);
                     })
-
                 });
+
+                eventBus.on("map_zoomToExtent", (extent) => {
+                    mapView.goTo(extent);
+                })
 
 
                 // 获取天气

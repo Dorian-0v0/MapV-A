@@ -6,6 +6,7 @@ import './index.less'
 import FeatureLayer from '@geoscene/core/layers/FeatureLayer';
 import { message } from 'antd';
 import LayerList from './LayerList';
+import { RadarChartOutlined, SlidersOutlined } from '@ant-design/icons';
 
 const MapController = ({ isChanged }) => {
     const [isBaseMapVisible, setisBaseMapVisible] = useState(false);
@@ -85,20 +86,20 @@ const MapController = ({ isChanged }) => {
                 </button>
 
                 <button
-                    className='geoscene-icon-edit'
-                    title="要素编辑">
+                    className='geoscene-icon-printer'
+                    title="出图">
                 </button>
 
                 <button
-                    className='geoscene-icon-measure-line'
+                    className='geoscene-icon-measure-area'
                     title="测量">
                 </button>
 
-                <button className='geoscene-icon-partly-cloudy' title="区域天气"
+                <button title="空间分析工具" // 使用图标组件
                     onClick={() => {
                         eventBusFun('getWeather')
                     }}>
-
+                    <RadarChartOutlined style={{ fontSize: '19px' }} />
                 </button>
                 <button className='geoscene-icon-chat' title="GeoAI交互式工具"
                     onClick={() => {
