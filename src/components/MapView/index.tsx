@@ -16,13 +16,14 @@ import MapBottom from '../MapBottom';
 import LayerFilter from '../LayerFilter';
 import AddLayers from '../AddLayers';
 import { message } from 'antd';
+import Legend from "@geoscene/core/widgets/Legend.js";
 interface MapViewProps {
     type?: string;
 }
 
 const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
     const mapDivRef = useRef<HTMLDivElement>(null);
-    const { map, updateViewState, updateMapState, wmtsLayer, view } = useMapStore();
+    const { map, updateViewState, updateMapState, wmtsLayer, view, updateMapViewState } = useMapStore();
 
     // 新增状态：追踪地图是否加载完成
     const [isMapReady, setIsMapReady] = useState(false);
@@ -57,6 +58,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
             });
 
             if (type === "work") {
+
                 // 您原有的工作地图初始化逻辑...
                 const homeWidget = new Home({ view: mapView });
                 const basemapGallery = new BasemapGallery({
@@ -103,6 +105,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                                 }))
                             }]
                         };
+                        layer.legendVisible = false
                     }).catch(error => {
                         message.error(`无法展示弹框${error.message}`);
                     })
@@ -135,7 +138,9 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
             // 标记地图已加载完成
             setIsMapReady(true);
             setMapViewInstance(mapView);
+            updateMapViewState(mapView)
             updateMapState(map)
+
         });
 
         return () => {

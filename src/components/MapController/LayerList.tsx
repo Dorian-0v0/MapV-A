@@ -15,7 +15,7 @@ interface LayerInfo {
 }
 
 export default function LayerList() {
-    const { map } = useMapStore();
+    const { map, mapView } = useMapStore();
     const [layers, setLayers] = useState<LayerInfo[]>([]);
     const [activeKey, setActiveKey] = useState<string | string[]>([]);
     const [layersChange, setLayersChange] = useState(false);
@@ -56,7 +56,27 @@ export default function LayerList() {
 
 
 
+    const toggleLegendVisibility = async (layer) => {
+        // setSelectLayer(layer)
+        layer.legendVisible = !layer.legendVisible;
 
+        if (layer.legendVisible) {
+
+            const legend = new Legend({
+                view: mapView,
+                layerInfos: [{
+                    layer: layer,
+                    title: null // 设置为null不显示图层名称
+                }],
+                container: `${layer.id}-legend`,
+            });
+
+
+        } else {
+            document.getElementById(`${layer.id}-legend`).innerHTML = ''
+        }
+
+    };
 
     // 切换图层可见性
     const toggleLayerVisibility = (layer) => {
@@ -79,6 +99,15 @@ export default function LayerList() {
         setLayersChange(prev => !prev)
     };
 
+    useEffect(() => {
+        return () => {
+            console.log("销毁图例");
+
+            map.layers?._items.forEach(layer => {
+                layer.legendVisible = false
+            })
+        }
+    }, [])
     return (
         <div style={{ padding: "0px 5px", maxHeight: "calc(100vh - 180px)", overflowY: "auto" }}>
             <List
@@ -122,12 +151,13 @@ export default function LayerList() {
                                     onClick={() => checkLayerInfo(layer)}
                                 />
                                 <Button
-                                    className='btn-group'
                                     type="text"
-                                    title="切换属性表"
-                                    icon={<TableOutlined />}
-                                    onClick={() => checkLayerInfo(layer)}
+                                    size="small"
+                                    icon={<BgColorsOutlined />}
+                                    onClick={() => toggleLegendVisibility(layer)}
+                                    title={"图例"}
                                 />
+
                                 <Button
                                     className='btn-group'
                                     type="text"
@@ -149,7 +179,7 @@ export default function LayerList() {
                                 />
                                 <Dropdown overlay={
                                     <Menu>
-                                        <Menu.Item key="1" onClick={() => console.log('查看图例')} icon={<BgColorsOutlined />}>查看图例</Menu.Item>
+                                        <Menu.Item key="1" onClick={() => console.log('查看图例')} icon={<TableOutlined />}>切换字段值表</Menu.Item>
                                         <Menu.Item key="2" onClick={() => console.log('要素编辑')} icon={<EditOutlined />}>要素编辑</Menu.Item>
                                         <Menu.Item key="3" onClick={() => console.log('数据导出')} icon={<ExportOutlined />}>数据导出</Menu.Item>
                                     </Menu>
@@ -162,6 +192,15 @@ export default function LayerList() {
                                     />
                                 </Dropdown>
                             </div>
+
+
+
+                            <div id={`${layer.id}-legend`} style={{
+                                padding: 0,
+                                overflow: 'hidden'
+                            }}></div>
+
+
                         </div>
 
 
@@ -319,26 +358,4 @@ export default function LayerList() {
     );
 }
 
-// 单独的图例组件
-function LegendComponent({ layer, containerId }: { layer: __esri.Layer, containerId: string }) {
-    const { map } = useMapStore();
 
-    useEffect(() => {
-        if (!map) return;
-
-        const legend = new Legend({
-            view: map.view,
-            layerInfos: [{
-                layer,
-                title: ''
-            }],
-            container: containerId
-        });
-
-        return () => {
-            legend.destroy();
-        };
-    }, [layer, containerId, map]);
-
-    return null;
-}

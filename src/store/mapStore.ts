@@ -64435,6 +64435,7 @@ const useMapStore = create((set) => ({
   map: new Map({
     basemap: wmtsLayer[1],
   }),
+  mapView : null,
   view: {
     center: [116.805, 28.027], // 经度, 纬度
     zoom: 4,
@@ -64449,6 +64450,8 @@ const useMapStore = create((set) => ({
       },
     });
   },
+
+  updateMapViewState: (newmapView: any) => set({ mapView: newmapView }),
 
   updateMapState: (newmap: any) => set({ map: newmap }),
 

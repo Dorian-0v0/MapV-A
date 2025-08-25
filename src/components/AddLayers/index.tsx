@@ -52,8 +52,10 @@ export default function AddLayers(props) {
       }
       eventBus.emit('set-button-loading');
       eventBus.emit('addLayerInWork', layer);
+      
       message.success('添加成功')
       setButtonLoading(false);
+      
     } catch (error) {
       console.error("图层加载失败", error);
       message.error("图层加载失败");
@@ -115,12 +117,6 @@ export default function AddLayers(props) {
   const [expandedKeys, setExpandedKeys] = useState(() => {
     return treeData.map(item => item.key);
   });
-
-
-
-
-
-
 
 
 
