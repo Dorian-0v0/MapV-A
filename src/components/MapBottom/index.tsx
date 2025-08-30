@@ -7,6 +7,7 @@ import "./index.less"
 import { Button, notification, Switch, Tooltip } from 'antd';
 import { EnvironmentOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { GaodeIcon } from '@/assets/icons';
+import useMapStore from '@/store/mapStore';
 
 // 定义 props 类型
 interface MapBottomProps {
@@ -27,6 +28,7 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
     const [enCodeGeoOpen, setEnCodeGeoOpen] = useState(false);
     // 保存事件处理器的引用
     const [geoCodeClickHandler, setGeoCodeClickHandler] = useState();
+    const {map} = useMapStore()
     // 获取天气情况
 
     // 定义右下角通知
@@ -209,8 +211,8 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
             gap: '5px'
         }}>
             {/* 底图名称 */}
-            <div style={{ minWidth: '150px' }}>
-                {baseMapName}
+            <div style={{ width: '150px', fontSize: '9px', fontFamily: "initial", textAlign: 'center' }}>
+                {map?.basemap?.title}
             </div>
 
             {/* 坐标显示 */}
@@ -229,16 +231,16 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
                     placeholder="经度"
                     value={longitude}
                     onChange={(e) => setLongitude(e.target.value)}
-                    style={{ width: '100px' }}
+                    style={{ width: '80px' }}
                 />
                 <input
                     placeholder="纬度"
                     value={latitude}
                     onChange={(e) => setLatitude(e.target.value)}
-                    style={{ width: '100px' }}
+                    style={{ width: '80px' }}
                 />
                 <button
-                    style={{ width: '20px', height: '20px', border: 'none' }}
+                    style={{ width: '20px', height: '20px', border: 'none', backgroundColor: '#d0d9deff' }}
                     className='geoscene-widget--button geoscene-icon-zoom-to-object'
                     onClick={handleLocate}
                     title='定位并跳转'
@@ -246,12 +248,10 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
                 </button>
                 <button
                     onClick={handleClear}
-                    style={{ width: '20px', height: '20px', border: 'none' }}
+                    style={{ width: '20px', height: '20px', border: 'none', backgroundColor: '#d0d9deff'}}
                     className='geoscene-widget--button geoscene-icon-trash'
                     title='清空定位'
                 >
-
-
                 </button>
             </div>
             {contextHolder}
@@ -260,7 +260,7 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
                 placement="top"
                 overlayStyle={{ maxWidth: 300 }}
             >
-                <span style={{ marginRight: 8 }}>
+                <span style={{ marginRight: 18 }}>
                     <Switch
                         style={{
                             bottom: 2,

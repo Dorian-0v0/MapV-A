@@ -6,10 +6,11 @@ import {
   SunOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom'; // 路由跳转
+import { useLocation, useNavigate } from 'react-router-dom'; // 路由跳转
 import { AvatarIcon, GeoSceneMapIcon, LoGoIcon } from '@/assets/icons';
 import { Outlet } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { eventBus } from '@/utils/eventBus';
 
 const { Header } = Layout;
 
@@ -17,19 +18,21 @@ const LayOut = () => {
   const [isAIModalVisible, setAIModalVisible] = useState(false); // AI对话框可见状态
   const [isDarkMode, setIsDarkMode] = useState(false); // 切换暗黑模式
   const navigate = useNavigate();
+
+  
   const changeGlobalStyle = () => {
     const html = document.documentElement;
-  
-  if (html) {
-    // 切换dark mode类而不是直接操作style
-    if (isDarkMode) {
-      html.classList.remove('dark-mode');
-    } else {
-      html.classList.add('dark-mode');
+
+    if (html) {
+      // 切换dark mode类而不是直接操作style
+      if (isDarkMode) {
+        html.classList.remove('dark-mode');
+      } else {
+        html.classList.add('dark-mode');
+      }
     }
-  }
-  
-  setIsDarkMode(!isDarkMode);
+
+    setIsDarkMode(!isDarkMode);
   };
   const items = [
     {
@@ -73,7 +76,7 @@ const LayOut = () => {
         <Menu
           mode="horizontal"
           theme="light"
-          defaultSelectedKeys={['1']}
+          defaultSelectedKeys={'1'}
           items={items}
           style={{ flex: 1, minWidth: 0 }}
         />
@@ -156,9 +159,9 @@ const LayOut = () => {
               <p style={{ margin: '0', color: '#555', lineHeight: '1.3' }}>
                 这里是 AI 对话框的内容区域，可以放置聊天记录、输入框等。
               </p>
-              
+
             </div>
-            
+
           </div>
         </Modal>
 

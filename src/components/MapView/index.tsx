@@ -17,6 +17,8 @@ import LayerFilter from '../LayerFilter';
 import AddLayers from '../AddLayers';
 import { message } from 'antd';
 import Legend from "@geoscene/core/widgets/Legend.js";
+import MeasurePanel from './MeasurePanel';
+
 interface MapViewProps {
     type?: string;
 }
@@ -58,6 +60,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
             });
 
             if (type === "work") {
+                
 
                 // 您原有的工作地图初始化逻辑...
                 const homeWidget = new Home({ view: mapView });
@@ -69,25 +72,6 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                 });
                 // 底图控件
                 mapView.ui.add(homeWidget, "top-left");
-
-                // 加载所有图层
-                // map.addMany(layers);
-                // layers.forEach(ly => {
-                //     mapView.whenLayerView(ly).then(layerView => {
-                //         ly.popupTemplate = {
-                //             title: '{name}',
-                //             highlightEable: true,
-                //             content: [{
-                //                 type: "fields",
-                //                 fieldInfos: (ly.fields || []).map(field => ({
-                //                     fieldName: field.name,
-                //                     label: field.name,
-                //                     visible: true
-                //                 }))
-                //             }]
-                //         };
-                //     });
-                // });
 
 
 
@@ -152,6 +136,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
             if (mapDivRef) {
                 console.log("地图销毁");
             }
+
         };
     }, []);
 
@@ -173,7 +158,8 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
             />
             <LayerFilter map={map}></LayerFilter>
             <AddLayers map={map}></AddLayers>
-            <BaseMapPanel />
+           <BaseMapPanel /> 
+            <MeasurePanel></MeasurePanel>
 
             {/* 只在 mapView 加载完成后渲染 MapBottom */}
 

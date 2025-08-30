@@ -1,29 +1,34 @@
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import GeoJSONLayer from '@geoscene/core/layers/GeoJSONLayer';
 import { eventBus } from '@/utils/eventBus'
 import useMapStore from '@/store/mapStore';
 import './index.less'
-import FeatureLayer from '@geoscene/core/layers/FeatureLayer';
-import { message } from 'antd';
+
 import LayerList from './LayerList';
 import { RadarChartOutlined, SlidersOutlined } from '@ant-design/icons';
 
 const MapController = ({ isChanged }) => {
     const [isBaseMapVisible, setisBaseMapVisible] = useState(false);
 
-    // 监听事件总线
+
+
+
     useEffect(() => {
-        eventBus.on('closeBaseMapTable', () => {
+        const handleCloseBaseMap = () => {
             setisBaseMapVisible(false);
             console.log("关闭basemaptable成功", isBaseMapVisible);
-        });
-        return () => {
-            console.log("关闭basemaptable成功||||||||||||||||||||");
-            // eventBus.removeAllListeners();
-            setisBaseMapVisible(false);
-            eventBus.removeAllListeners();
         };
-    }, [])
+
+        eventBus.on('closeBaseMapTable', handleCloseBaseMap);
+
+        return () => {
+            console.log("组件卸载，执行清理");
+            setisBaseMapVisible(false);
+            eventBus.emit('close-measure-area')
+        };
+    }, []); // 空依赖数组表示只在挂载/卸载时执行
+
+
 
 
     // 事件总线汇总
@@ -40,6 +45,9 @@ const MapController = ({ isChanged }) => {
                 // eventBus.emit('addLayerInWork', new FeatureLayer({ url: 'https://www.geosceneonline.cn/server/rest/services/Hosted/%E5%85%AB%E5%8D%81%E5%A4%A9%E7%8E%AF%E6%B8%B8%E5%9C%B0%E7%90%83%E2%80%94%E2%80%94%E8%88%AA%E7%BA%BF/FeatureServer' }))
 
                 break;
+            case "open-measure-area":
+                eventBus.emit('open-measure-area', true)
+                break
             case 'open-layer-filter':
                 eventBus.emit('open-layer-filter')
         }
@@ -92,6 +100,9 @@ const MapController = ({ isChanged }) => {
 
                 <button
                     className='geoscene-icon-measure-area'
+                    onClick={() => {
+                        eventBusFun('open-measure-area')
+                    }}
                     title="测量">
                 </button>
 

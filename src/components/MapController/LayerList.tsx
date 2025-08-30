@@ -27,6 +27,15 @@ export default function LayerList() {
             setLayers(prevLayers => [...prevLayers, ...(map.layers?._items)]);
 
         })
+
+        // dataSource={layers.filter(item => item?.type !== 'graphics')}
+        map.layers?._items.forEach((ly) => {
+            console.log("移除所有测量", ly);
+            if (ly.type == "graphics" || ly.title == null) {
+                map.remove(ly);
+                setLayersChange(prev => !prev)
+            }
+        })
     }, []);
 
     // 初始化获取所有图层
@@ -42,14 +51,14 @@ export default function LayerList() {
     // 解析layer的名字
     const getLayerName = (item) => {
         const title = item.title;
-        // if (title?.[0] === '%') {
-        //     const name = item?.sourceJSON?.name;
-        //     if (name !== undefined && name !== null) return name;
-        //     console.log("title", decodeURIComponent(title));
+        if (title?.[0] === '%') {
+            const name = item?.sourceJSON?.name;
+            if (name !== undefined && name !== null) return name;
+            console.log("title", decodeURIComponent(title));
 
-        //         return decodeURIComponent(title);
+                return decodeURIComponent(title);
 
-        // }
+        }
         console.log("title", decodeURIComponent(title));
         return title;
     };
