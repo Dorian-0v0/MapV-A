@@ -11,6 +11,13 @@ import {
 import { eventBus } from '@/utils/eventBus'
 import Layer from "@geoscene/core/layers/Layer.js";
 import useMapStore from '@/store/mapStore';
+import GeoJSONLayer from "@geoscene/core/layers/GeoJSONLayer.js";
+import WFSLayer from "@geoscene/core/layers/WFSLayer.js";
+import WMSLayer from "@geoscene/core/layers/WMSLayer.js";
+import WebTileLayer from "@geoscene/core/layers/WebTileLayer.js";
+import SimpleRenderer from "@geoscene/core/renderers/SimpleRenderer.js";
+// import * as symbols from "@geoscene/core/symbols.js";
+import { SimpleFillSymbol, SimpleLineSymbol } from '@geoscene/core/symbols.js';
 export default function AddLayers(props) {
   const { map } = props;
   // const { updateMap, view, updateViewState, wmtsLayer } = useMapStore();
@@ -20,6 +27,41 @@ export default function AddLayers(props) {
   const [buttonLoading, setButtonLoading] = useState(false);
 
 
+
+  // 为要素图层设置随机颜色的渲染器
+  async function setRandomFeatureLayerRenderer(layer) {
+    try {
+      // 等待图层加载
+      await layer.load();
+
+      // 生成随机颜色
+      const randomColor = getRandomColor();
+
+      // 创建简单渲染器
+      const renderer = new SimpleRenderer({
+        symbol: new SimpleFillSymbol({
+          color: randomColor,
+          outline: new SimpleLineSymbol({
+            color: [50, 50, 50],
+            width: 1
+          })
+        })
+      });
+
+      // 设置渲染器
+      layer.renderer = renderer;
+    } catch (error) {
+      console.error("设置随机颜色失败", error);
+    }
+  }
+
+  // 生成随机颜色
+  function getRandomColor() {
+    const r = Math.floor(Math.random() * 255);
+    const g = Math.floor(Math.random() * 255);
+    const b = Math.floor(Math.random() * 255);
+    return [r, g, b, 0.7]; // RGB数组，带透明度
+  }
 
   // 添加不同类型的图层
   const addDifferentLayers = async (value) => {
@@ -31,31 +73,53 @@ export default function AddLayers(props) {
       switch (type) {
         case 'arcgis-rest':
           layer = await Layer.fromGeoSceneServerUrl({ url });
-
-          if (name) {
-            layer.title = name;
-          }
-          map.add(layer)
           layer.serviceType = 'ArcGIS-Rest-API';
-
           break;
         case 'geojson-web':
           // 添加处理 geojson-web 类型图层的逻辑
+          layer = new GeoJSONLayer({
+            url: url
+          });
+          await setRandomFeatureLayerRenderer(layer);
+          layer.serviceType = 'GeoJSON-Web';
           console.log("处理 geojson-web 类型图层");
           break;
         case 'ogc-wfs':
           // 添加处理 ogc-wfs 类型图层的逻辑
+          layer = new WFSLayer({
+            url: url
+          })
+           await setRandomFeatureLayerRenderer(layer);
+          layer.serviceType = 'OGC-WFS';
           console.log("处理 ogc-wfs 类型图层");
+          break;
+        case 'ogc-wms':
+          layer = new WMSLayer({
+            url: url
+          })
+          layer.serviceType = 'OGC-WMS';
+          console.log("处理 ogc-wms 类型图层");
+          break;
+        case 'ogc-wmts':
+          layer = new WebTileLayer({
+            url: url
+          })
+          layer.serviceType = 'OGC-WMTS';
+          console.log("处理 ogc-wmts 类型图层");
           break;
         default:
           console.log("未知类型图层", type, url, name, id);
       }
+      if (name) {
+        layer.title = name;
+      }
+      map.add(layer)
       eventBus.emit('set-button-loading');
       eventBus.emit('addLayerInWork', layer);
-      
+
       message.success('添加成功')
       setButtonLoading(false);
-      
+
     } catch (error) {
       console.error("图层加载失败", error);
       message.error("图层加载失败");
