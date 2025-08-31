@@ -26,6 +26,11 @@ export default function AddLayers(props) {
   const [webUrlForm] = Form.useForm(); // 创建表单实例
   const [buttonLoading, setButtonLoading] = useState(false);
 
+  // 提交文件回显图层
+  const submitFiles = async () => {
+
+  }
+
 
 
   // 为要素图层设置随机颜色的渲染器
