@@ -1,13 +1,14 @@
-import { Button, Card, Modal } from "antd";
+import { Button, Card, Divider, Modal, Switch } from "antd";
 import React, { useRef, useState } from "react";
 
 
 
-import { CloseOutlined, UserOutlined } from '@ant-design/icons';
+import { ApiOutlined, CloseOutlined, LinkOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons';
 import { Bubble, Sender, useXAgent, useXChat } from '@ant-design/x';
 import { Flex, type GetProp } from 'antd';
 import Draggable from "react-draggable";
-
+import DraggableModal from "@/ui/AntdDraggableModal";
+import "./index.less"
 const sleep = () => new Promise((resolve) => setTimeout(resolve, 1000));
 
 const roles: GetProp<typeof Bubble.List, 'roles'> = {
@@ -28,6 +29,7 @@ const roles: GetProp<typeof Bubble.List, 'roles'> = {
 let mockSuccess = false;
 
 const AiChat = (props: any) => {
+
     const { isAIModalVisible, setAIModalVisible } = props;
     const [content, setContent] = React.useState('');
 
@@ -54,64 +56,90 @@ const AiChat = (props: any) => {
         requestFallback: 'Mock failed return. Please try again later.',
     });
 
-    return (isAIModalVisible &&
-        <Draggable>
-            <div
-                style={{
-                    width: 600,
-                    height: 450,
-                    backgroundColor: 'white',
-                    position: 'absolute',
-                    padding: 16,
-                    borderRadius: 8,
-                    overflow: 'hidden'
-                }}
-            >
-                <div
-                    style={{
-                        backgroundColor: '#f0f0f0',
-                        cursor: 'move',
-                        display: 'flex',
+    const [loading, setLoading] = useState<boolean>(false);
+    const [value, setValue] = useState<string>('');
 
+    const iconStyle = {
+        fontSize: 18,
+    };
+
+    React.useEffect(() => {
+        if (loading) {
+            const timer = setTimeout(() => {
+                setLoading(false);
+                setValue('');
+                console.log('Send message successfully!');
+            }, 2000);
+            return () => {
+                clearTimeout(timer);
+            };
+        }
+    }, [loading]);
+    return (
+        <DraggableModal
+            visible={isAIModalVisible}
+            onClose={() => setAIModalVisible(false)}
+            title="GeoAI 助手"
+            bounds=""
+            bodyStyle={{
+                height: "100%", width: "100%"
+            }}
+        >
+            <Flex vertical gap="middle">
+                <Bubble.List
+                    roles={roles}
+                    style={{ height: 360, width: 400 }}
+                    items={messages.map(({ id, message, status }) => ({
+                        key: id,
+                        loading: status === 'loading',
+                        role: status === 'local' ? 'local' : 'ai',
+                        content: message,
+                    }))}
+                />
+                <Sender
+            
+                    value={value}
+                    onChange={setValue}
+                    autoSize={{ minRows: 2, maxRows: 6 }}
+                    placeholder="Press Enter to send message"
+                    footer={({ components }) => {
+                        const { SendButton, LoadingButton, SpeechButton } = components;
+                        return (
+                            <Flex justify="space-between" align="center">
+                                <Flex gap="small" align="center">
+                                    <Button style={iconStyle} type="text" icon={<LinkOutlined />} />
+                                    <Divider type="vertical" />
+                                    Deep Thinking
+                                    <Switch size="small" />
+                                    <Divider type="vertical" />
+                                    <Button icon={<SearchOutlined />}>Global Search</Button>
+                                </Flex>
+                                <Flex align="center">
+                                    <Button type="text" style={iconStyle} icon={<ApiOutlined />} />
+                                    <Divider type="vertical" />
+                                    <SpeechButton style={iconStyle} />
+                                    <Divider type="vertical" />
+                                    {loading ? (
+                                        <LoadingButton type="default" />
+                                    ) : (
+                                        <SendButton type="primary" disabled={false} />
+                                    )}
+                                </Flex>
+                            </Flex>
+                        );
                     }}
-                >
-                    <span style={{ fontWeight: 'bold', fontSize: '16px', marginLeft: 8 }}>
-                        GeoAI 助手
-                    </span>
-                    <Button onClick={() => setAIModalVisible(false)}
-                        style={{
-                        right: -440,
-                        }}
-                        icon={<CloseOutlined />}
-                        type="text"
-                    >
-                    </Button>
+                    onSubmit={() => {
+                        setLoading(true);
+                    }}
+                    onCancel={() => {
+                        setLoading(false);
+                    }}
+                    actions={false}
+                />
+            </Flex>
+        </DraggableModal >
+    )
 
-                </div>
-                <Flex vertical gap="middle">
-                    <Bubble.List
-                        roles={roles}
-                        style={{ height: 300 }}
-                        items={messages.map(({ id, message, status }) => ({
-                            key: id,
-                            loading: status === 'loading',
-                            role: status === 'local' ? 'local' : 'ai',
-                            content: message,
-                        }))}
-                    />
-                    <Sender
-                        loading={agent.isRequesting()}
-                        value={content}
-                        onChange={setContent}
-                        onSubmit={(nextContent) => {
-                            onRequest(nextContent);
-                            setContent('');
-                        }}
-                    />
-                </Flex>
-            </div>
-        </Draggable>
-    );
 };
 
 export default AiChat;

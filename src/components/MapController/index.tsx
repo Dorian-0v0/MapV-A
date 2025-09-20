@@ -50,6 +50,10 @@ const MapController = ({ isChanged }) => {
                 break
             case 'open-layer-filter':
                 eventBus.emit('open-layer-filter')
+                break
+            case "openGeoAi":
+                eventBus.emit('openGeoAi')
+                break
         }
     }
 
@@ -114,7 +118,7 @@ const MapController = ({ isChanged }) => {
                 </button>
                 <button className='geoscene-icon-chat' title="GeoAI交互式工具"
                     onClick={() => {
-                        eventBusFun('addLayerInWork')
+                        eventBusFun('openGeoAi')
                     }}
                 >
 

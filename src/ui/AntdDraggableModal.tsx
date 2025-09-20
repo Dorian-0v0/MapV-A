@@ -1,135 +1,120 @@
-import React, { Component } from 'react';
-import AntdModal, { ModalProps } from 'antd/lib/modal';
+import React from 'react';
+import { CloseOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
+import Draggable from 'react-draggable';
 
-
-export default class AntDraggableModal extends Component<ModalProps> {
-  private simpleClass: string;
-  private header: HTMLElement | null = null;
-  private contain: HTMLElement | null = null;
-  private modalContent: HTMLElement | null = null;
-
-  private mouseDownX: number = 0;
-  private mouseDownY: number = 0;
-  private deltaX: number = 0;
-  private deltaY: number = 0;
-  private sumX: number = 0;
-  private sumY: number = 0;
-
-  constructor(props: ModalProps) {
-    super(props);
-    this.simpleClass = `draggable-modal-${Math.random().toString(36).substring(2)}`;
-  }
-
-  handleMove = (event: MouseEvent) => {
-    if (!this.modalContent) return;
-    
-    const deltaX = event.pageX - this.mouseDownX;
-    const deltaY = event.pageY - this.mouseDownY;
-
-    this.deltaX = deltaX;
-    this.deltaY = deltaY;
-
-    this.modalContent.style.transform = `translate(${deltaX + this.sumX}px, ${deltaY + this.sumY}px)`;
-  };
-
-  handleHeaderMouseDown = (event: React.MouseEvent<HTMLDivElement> | MouseEvent) => {
-    this.mouseDownX = event.pageX;
-    this.mouseDownY = event.pageY;
-    
-    // 防止文本选择
-    document.body.style.userSelect = 'none';
-    
-    window.addEventListener('mousemove', this.handleMove, false);
-  };
-
-  removeMove = () => {
-    window.removeEventListener('mousemove', this.handleMove, false);
-  };
-
-  removeUp = () => {
-    // 恢复文本选择
-    document.body.style.userSelect = '';
-    
-    this.sumX += this.deltaX;
-    this.sumY += this.deltaY;
-    
-    this.deltaX = 0;
-    this.deltaY = 0;
-    
-    this.removeMove();
-  };
-
-  initialEvent = (visible: boolean) => {
-    const { title } = this.props;
-    
-    // 清理现有事件监听器
-    window.removeEventListener('mouseup', this.removeUp, false);
-    this.removeMove();
-    
-    if (title && visible) {
-      setTimeout(() => {
-        this.contain = document.querySelector(`.${this.simpleClass}`);
-        if (!this.contain) return;
-        
-        this.header = this.contain.querySelector('.ant-modal-header');
-        this.modalContent = this.contain.querySelector('.ant-modal-content');
-        
-        if (this.header && this.modalContent) {
-          this.header.style.cursor = 'move';
-          
-          // 移除旧的事件监听器（如果存在）
-          this.header.onmousedown = null;
-          
-          // 添加新的事件监听器
-          this.header.addEventListener('mousedown', this.handleHeaderMouseDown as EventListener);
-          
-          // 添加鼠标释放事件监听器
-          window.addEventListener('mouseup', this.removeUp, false);
-        }
-      }, 0);
-    }
-  };
-
-  componentDidMount() {
-    const { visible = false } = this.props;
-    this.initialEvent(visible);
-  }
-
-  componentDidUpdate(prevProps: ModalProps) {
-    // 当visible属性变化时重新初始化事件
-    if (prevProps.visible !== this.props.visible) {
-      this.initialEvent(this.props.visible || false);
-      
-      // 如果模态框关闭，重置位置
-      if (!this.props.visible) {
-        this.sumX = 0;
-        this.sumY = 0;
-        this.deltaX = 0;
-        this.deltaY = 0;
-      }
-    }
-  }
-
-  componentWillUnmount() {
-    // 清理所有事件监听器
-    if (this.header) {
-      this.header.removeEventListener('mousedown', this.handleHeaderMouseDown as EventListener);
-    }
-    this.removeMove();
-    window.removeEventListener('mouseup', this.removeUp, false);
-    
-    // 恢复文本选择
-    document.body.style.userSelect = '';
-  }
-
-  render() {
-    const { children, wrapClassName, ...other } = this.props;
-    const wrapModalClassName = wrapClassName ? `${wrapClassName} ${this.simpleClass}` : this.simpleClass;
-    
-    return (
-      <AntdModal {...other} wrapClassName={wrapModalClassName}>
-        {children}
-      </AntdModal>
-    );
-  }
+interface DraggableModalProps {
+  /** 是否显示模态框 */
+  visible: boolean;
+  /** 控制模态框显示状态的函数 */
+  onClose: () => void;
+  /** 模态框宽度 */
+  maxWidth?: number;
+  /** 模态框高度 */
+  maxHeight?: number;
+  /** 初始位置 */
+  defaultPosition?: { x: number; y: number };
+  /** 标题内容 */
+  title?: React.ReactNode;
+  /** 自定义样式 */
+  style?: React.CSSProperties;
+  /** 头部样式 */
+  headerStyle?: React.CSSProperties;
+  /** 内容区域样式 */
+  bodyStyle?: React.CSSProperties;
+  /** 子内容 */
+  children?: React.ReactNode;
+  /** 拖拽边界选择器 */
+  bounds?: string;
+  handleSelector?: string;
 }
+
+const DraggableModal: React.FC<DraggableModalProps> = ({
+  visible,
+  onClose,
+  maxWidth = 1000,
+  maxHeight = 800,
+  defaultPosition = { x: 250, y: 300 },
+  title = '',
+  style,
+  headerStyle,
+  bodyStyle,
+  children,
+  bounds = '#root',
+  handleSelector = '.drag-handle'
+}) => {
+  if (!visible) return null;
+
+  return (
+    <Draggable
+      defaultPosition={defaultPosition}
+      bounds={bounds}
+      handle={handleSelector}
+    >
+      <div
+        style={{
+          backgroundColor: 'white',
+          position: 'absolute',
+          borderRadius: 8,
+          overflow: 'hidden',
+          border: '2px solid #c6c4c4ff',
+          ...style
+        }}
+      >
+        {/* 头部拖拽区域 */}
+        <div
+          className="drag-handle"
+          style={{
+            backgroundColor: '#f0f0f0',
+            cursor: 'move',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '8px',
+            borderBottom: '1px solid #e8e8e8',
+            ...headerStyle
+          }}
+        >
+          <span style={{ fontWeight: 'bold', fontSize: '16px' }}>
+            {title}
+          </span>
+          <Button
+            onClick={onClose}
+            icon={<CloseOutlined />}
+            type="text"
+            size="small"
+            style={{ marginLeft: 8 }}
+          />
+        </div>
+
+        {/* 内容区域 */}
+        <div
+          style={{
+            maxHeight,
+            maxWidth,
+            padding: 10,
+            overflow: 'auto',
+            ...bodyStyle
+          }}
+        >
+          {children}
+        </div>
+         <div
+          className="drag-handle"
+          style={{
+            backgroundColor: '#f0f0f0',
+            cursor: 'move',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '8px',
+            borderBottom: '1px solid #e8e8e8',
+          }}
+        >
+        </div>
+      </div>
+    </Draggable>
+  );
+};
+
+export default DraggableModal;

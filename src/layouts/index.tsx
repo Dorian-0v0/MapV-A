@@ -19,6 +19,11 @@ const LayOut = () => {
   const [isAIModalVisible, setAIModalVisible] = useState(false); // AI对话框可见状态
   const [isDarkMode, setIsDarkMode] = useState(false); // 切换暗黑模式
   const navigate = useNavigate();
+  useEffect(() => {
+    eventBus.on('openGeoAi', () => {
+      setAIModalVisible(true);
+    });
+  }, []);
 
 
   const changeGlobalStyle = () => {
@@ -83,14 +88,6 @@ const LayOut = () => {
         />
         {/* 右侧功能区 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 25 }}>
-          {/* AI 对话框按钮 */}
-          <Button
-            type="primary"
-            shape="circle"
-            icon={<MessageOutlined />}
-            onClick={() => setAIModalVisible(true)}
-            size="small"
-          />
 
           {/* 昼夜模式切换 */}
           <Switch
