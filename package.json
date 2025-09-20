@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
+    "@ant-design/x": "^1.6.1",
     "@geoscene/core": "^4.29.10",
     "@turf/turf": "^7.2.0",
     "antd": "^5.26.6",
@@ -19,6 +20,7 @@
     "events": "^3.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-draggable": "^4.5.0",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.7.0",
     "rehype-raw": "^7.0.0",

@@ -28,7 +28,7 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
     const [enCodeGeoOpen, setEnCodeGeoOpen] = useState(false);
     // 保存事件处理器的引用
     const [geoCodeClickHandler, setGeoCodeClickHandler] = useState();
-    const {map} = useMapStore()
+    const { map } = useMapStore()
     // 获取天气情况
 
     // 定义右下角通知
@@ -110,12 +110,19 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
 
     // 定位功能
     const handleLocate = () => {
+        console.log("开始定位", longitude, latitude, view);
+        view.graphics.removeAll();
+        // 去除弹窗
+        view.closePopup();
         if (!longitude || !latitude || !view) return;
 
         const point = new Point({
             x: parseFloat(longitude),
             y: parseFloat(latitude),
         });
+
+        console.log("point", point);
+
 
         // 添加点和弹窗
         view.graphics.add({
@@ -128,23 +135,23 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
         });
 
         // 添加弹窗
-        view.popup.open({
+        // 使用新的 openPopup 方法添加弹窗
+        view.openPopup({
             title: '定位点',
             content: `
-    <table style="width:100%; border-collapse: collapse;">
-      <tr>
-        <td style="border:1px solid #ddd; padding:8px;">经度 (X)</td>
-        <td style="border:1px solid #ddd; padding:8px;">${point.x.toFixed(6)}</td>
-      </tr>
-      <tr>
-        <td style="border:1px solid #ddd; padding:8px;">纬度 (Y)</td>
-        <td style="border:1px solid #ddd; padding:8px;">${point.y.toFixed(6)}</td>
-      </tr>
-    </table>
-  `,
+<table style="width:100%; border-collapse: collapse;">
+  <tr>
+    <td style="border:1px solid #ddd; padding:8px;">经度 (X)</td>
+    <td style="border:1px solid #ddd; padding:8px;">${point.x.toFixed(6)}</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #ddd; padding:8px;">纬度 (Y)</td>
+    <td style="border:1px solid #ddd; padding:8px;">${point.y.toFixed(6)}</td>
+  </tr>
+</table>
+`,
             location: point
         });
-
         view.goTo({
             target: point,
             zoom: 7
@@ -248,7 +255,7 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
                 </button>
                 <button
                     onClick={handleClear}
-                    style={{ width: '20px', height: '20px', border: 'none', backgroundColor: '#d0d9deff'}}
+                    style={{ width: '20px', height: '20px', border: 'none', backgroundColor: '#d0d9deff' }}
                     className='geoscene-widget--button geoscene-icon-trash'
                     title='清空定位'
                 >

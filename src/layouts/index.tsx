@@ -11,6 +11,7 @@ import { AvatarIcon, GeoSceneMapIcon, LoGoIcon } from '@/assets/icons';
 import { Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { eventBus } from '@/utils/eventBus';
+import AiChat from '@/components/AiChat';
 
 const { Header } = Layout;
 
@@ -19,7 +20,7 @@ const LayOut = () => {
   const [isDarkMode, setIsDarkMode] = useState(false); // 切换暗黑模式
   const navigate = useNavigate();
 
-  
+
   const changeGlobalStyle = () => {
     const html = document.documentElement;
 
@@ -127,43 +128,11 @@ const LayOut = () => {
           </Dropdown>
         </div>
 
-        {/* AI 对话框 */}
-        <Modal
-          title="GIS网页制图与可视化平台 AI 助手"
-          visible={isAIModalVisible}
-          onCancel={() => setAIModalVisible(false)}
-          footer={null}
-          width={450}
-          height={600}
-          centered
-          maskClosable={false} // 禁止点击蒙层关闭
-          keyboard={false}     // 禁止按 Esc 键关闭
-          bodyStyle={{
-            padding: '0', // 去除默认内边距，方便自定义内容区域
-            height: '450px',
-          }}
-        >
-          <div
-            style={{
-              height: '100%',
-              padding: '20px',
-              borderRadius: '0 0 12px 12px', // 底部圆角与 Modal 一致
-              overflowY: 'auto', // 允许内容滚动
-            }}
-          >
-            <div style={{
-              borderRadius: '4px',
-              padding: '4px',
-              outline: '2px solid #757982',
-            }}>
-              <p style={{ margin: '0', color: '#555', lineHeight: '1.3' }}>
-                这里是 AI 对话框的内容区域，可以放置聊天记录、输入框等。
-              </p>
-
-            </div>
-
-          </div>
-        </Modal>
+        <AiChat
+        isAIModalVisible={isAIModalVisible}
+        setAIModalVisible={setAIModalVisible}
+        ></AiChat>
+     
 
       </Header>
 
