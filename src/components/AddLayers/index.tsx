@@ -119,6 +119,8 @@ export default function AddLayers(props) {
         layer.title = name;
       }
       map.add(layer)
+      console.log("添加图层成功", layer);
+      
       eventBus.emit('set-button-loading');
       eventBus.emit('addLayerInWork', layer);
 

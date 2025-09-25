@@ -56,7 +56,7 @@ export default function LayerList() {
             if (name !== undefined && name !== null) return name;
             console.log("title", decodeURIComponent(title));
 
-                return decodeURIComponent(title);
+            return decodeURIComponent(title);
 
         }
         console.log("title", decodeURIComponent(title));
@@ -79,10 +79,18 @@ export default function LayerList() {
                 }],
                 container: `${layer.id}-legend`,
             });
-
+            const legendElement = document.getElementById(`${layer.id}-legend`);
+            if (legendElement) {
+                legendElement.style.height = '200px';
+            }
 
         } else {
-            document.getElementById(`${layer.id}-legend`).innerHTML = ''
+              const legendElement = document.getElementById(`${layer.id}-legend`);
+            if (legendElement) {
+                legendElement.style.height = '0';
+                legendElement.innerHTML = '';
+            }
+          
         }
 
     };
@@ -183,7 +191,7 @@ export default function LayerList() {
                                     icon={<FullscreenExitOutlined />}
                                     onClick={() => {
                                         // 使用 goTo 方法缩放到该范围
-                                        eventBus.emit('map_zoomToExtent', layer.fullExtent)
+                                        eventBus.emit('map_zoomToExtent', layer.fullExtent || layer.layers.items[0].fullExtent)
                                     }}
                                 />
                                 <Dropdown overlay={
@@ -206,7 +214,10 @@ export default function LayerList() {
 
                             <div id={`${layer.id}-legend`} style={{
                                 padding: 0,
-                                overflow: 'hidden'
+                                width: '100%',
+                                overflowX: 'hidden', // 关键属性：隐藏水平滚动条并禁止水平滑动
+                                overflowY: 'auto',   // 允许垂直滚动（如果需要）
+                                boxSizing: 'border-box' // 确保padding和border不增加额外宽度
                             }}></div>
 
 

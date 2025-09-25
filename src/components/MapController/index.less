@@ -30,7 +30,7 @@
   // 折叠状态样式（宽度50px）
   &.collapsed {
     width: 50px;
-    
+
     button {
       width: 100%; // 每个按钮占满整行
       height: 40px; // 保持高度不变
@@ -46,51 +46,73 @@
     }
   }
 }
-.ant-collapse-small >.ant-collapse-item >.ant-collapse-content>.ant-collapse-content-box {
-    padding: 0px;
+
+.ant-collapse-small>.ant-collapse-item>.ant-collapse-content>.ant-collapse-content-box {
+  padding: 0px;
 }
 
 .ant-descriptions .ant-descriptions-view {
-    border-radius: 0px; 
+  border-radius: 0px;
 }
 
 .odd-row {
   background-color: #f0f1f0;
 }
+
 .even-row {
   background-color: #ffffff;
 }
+
 .ant-btn.ant-btn-icon-only {
-    width: 29px;
+  width: 29px;
 }
+
 .geoscene-legend__service {
-    margin:0;
-    padding:0
+  margin: 0;
+  padding: 0
 }
 
 .legend-loading {
-    position: relative;
-    min-height: 100px;
-    background-color: rgba(255,255,255,0.8);
-    border: 1px solid #ddd;
-    border-radius: 4px;
+  position: relative;
+  min-height: 100px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 .legend-loading::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 30px;
-    height: 30px;
-    margin: -15px 0 0 -15px;
-    border: 3px solid #f3f3f3;
-    border-top: 3px solid #3498db;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+.geoscene-legend__symbol {
+    justify-content: left;
+    // display: flex;
+}
+
+
+.geoscene-legend__layer {
+  margin-left: 0px;
+  /* overflow: auto; */
+  width: 100%;
+  overflow-y: 'auto'; // 允许垂直滚动（如果需要）
+  box-sizing: 'border-box' // 确保padding和border不增加额外宽度
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }

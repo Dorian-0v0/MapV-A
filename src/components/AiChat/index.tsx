@@ -85,7 +85,13 @@ const AiChat = (props: any) => {
                 height: "100%", width: "100%"
             }}
         >
-            <Flex vertical gap="middle">
+            <iframe
+                src="http://localhost/chatbot/6r3oR8RIjtEN5ItW"
+                style={{ height: 500, width: 400 }}
+                frameBorder={0}
+                allow="microphone">
+            </iframe>
+            {/* <Flex vertical gap="middle">
                 <Bubble.List
                     roles={roles}
                     style={{ height: 360, width: 400 }}
@@ -136,7 +142,7 @@ const AiChat = (props: any) => {
                     }}
                     actions={false}
                 />
-            </Flex>
+            </Flex> */}
         </DraggableModal >
     )
 
