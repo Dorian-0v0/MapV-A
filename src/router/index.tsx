@@ -1,6 +1,7 @@
 import { lazy } from 'react'
 import App from '@/App'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
+import LoginPage from '@/pages/LoginPage'
 // 使用懒加载提高性能（可选）
 const MapWork = lazy(() => import('@/pages/MapWork'))
 const DataCenter = lazy(() => import('@/pages/DataCenter'))
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       
       // 可以继续添加更多子路由
     ]
+  },
+  {
+    path: '/login',
+    element: <LoginPage />
   },
   {
     path: '*',

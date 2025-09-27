@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
-import GeoJSONLayer from '@geoscene/core/layers/GeoJSONLayer';
 import { eventBus } from '@/utils/eventBus'
-import useMapStore from '@/store/mapStore';
 import './index.less'
-
 import LayerList from './LayerList';
 import { RadarChartOutlined, SlidersOutlined } from '@ant-design/icons';
 

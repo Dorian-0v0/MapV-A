@@ -1,9 +1,10 @@
 import { tenxunkey, tiandituKey } from "@/utils/request";
-import axios from 'axios';
+import instance from "@/utils/request";
 export const inverseGeoService = async (location) => {
     const { longitude, latitude } = location;
-    try {
-        const response = await axios.get(`http://api.tianditu.gov.cn/geocoder`, {
+    console.log("逆地理编码服务参数：", location);
+// http://api.tianditu.gov.cn/geocoder
+        const response = await instance.get("/geocoder", {
             params: {
                 postStr: JSON.stringify({
                     lon: longitude,
@@ -15,10 +16,10 @@ export const inverseGeoService = async (location) => {
             }
         });
         console.log("响应数据：", response);
-        if (response.data.status === "0") {
-            const { addressComponent } = response.data.result;
+        if (response.status == 0) {
+            const { addressComponent } = response.result;
             const { town, county, city, province, poi, county_code } = addressComponent;
-
+            console.log("逆地理编码服务返回数据：", addressComponent);
             return {
                 town: town,
                 county: county,
@@ -28,19 +29,17 @@ export const inverseGeoService = async (location) => {
                 countyCode: county_code
             };
         } else {
-            console.error("逆地理编码服务返回错误：", response.data.msg);
+            console.error("逆地理编码服务返回错误：", response.result.msg);
             return null;
         }
 
-    } catch (error) {
-        console.error("获取数据时发生错误：", error);
-    }
+  
 }
 
 // 获取天气状况
 export const weatherService = async (locationCode: string) => {
     try {
-        const response = await axios.get(`https://apis.map.qq.com/ws/weather/v1/`, {
+        const response = await instance.get(`https://apis.map.qq.com/ws/weather/v1/`, {
             params: {
                 location: locationCode,
                 key: tenxunkey
