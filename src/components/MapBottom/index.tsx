@@ -27,7 +27,7 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
     const [latitude, setLatitude] = useState('');
     const [enCodeGeoOpen, setEnCodeGeoOpen] = useState(false);
     // 保存事件处理器的引用
-    const CodeClickHandlerRef = useRef(null);
+    const [geoCodeClickHandler, setGeoCodeClickHandler] = useState();
     const { map } = useMapStore()
     // 获取天气情况
 
@@ -75,14 +75,14 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
         if (!enCodeGeoOpen) {
             console.log("开启状态!!!!");
             // 先移除可能已存在的事件处理器
-            CodeClickHandlerRef.current = view.on('click', enCodeGeo);
+            setGeoCodeClickHandler(view.on('click', enCodeGeo));
+            console.log("dewferfger", geoCodeClickHandler);
             setEnCodeGeoOpen(true);
             mapContainer.style.cursor = 'crosshair'
         } else {
             console.log("关闭状态!!!!");
             // 移除事件监听
-            CodeClickHandlerRef.current.remove();
-            CodeClickHandlerRef.current = null
+            geoCodeClickHandler.remove();
             setEnCodeGeoOpen(false);
             mapContainer.style.cursor = 'default'
         }

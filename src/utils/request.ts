@@ -1,6 +1,7 @@
 import axios from 'axios';
 import useTokenStore from '@/store/tokenStore';
 import { message } from 'antd';
+import { ApiError } from './ApiError';
 
 // 修正 baseURL
 const baseURL = 'http://localhost:8080';
@@ -18,12 +19,10 @@ instance.interceptors.response.use(
         return Promise.reject(result);
     },
     err => {
-        console.log("错误", err);
+        console.log("错误", err, err.response, err.message, err.code);
 
-        if (err?.response?.status === 401) {
-            message.error('请先登录');
-            // 移除 useNavigate()，改用其他方式跳转
-            redirectToLogin();
+        if (err?.response?.status || err.code === 401) {
+            redirectToLogin()
         } else {
             message.error('服务异常');
         }
@@ -35,16 +34,19 @@ instance.interceptors.response.use(
 instance.interceptors.request.use(
     (config) => {
         const token = useTokenStore.getState().token;
-        const whiteList = ['http://api.tianditu.gov.cn/geocoder', '/api/auth/refresh-token'];
-
+        const whiteList = ['http://api.tianditu.gov.cn/geocoder', '/geocoder', '/login'];
+        console.log("请求数据：", token);
+        
         if (!whiteList.includes(String(config.url)) && !token) {
             
-            useTokenStore.getState().clearToken();
-            redirectToLogin();
-            return Promise.reject(new Error('No authentication token found. Request canceled.'));
+            // debugger
+            return Promise.reject(new ApiError('No authentication token found. Request canceled.', 401));
+        }
+        if(whiteList.includes(String(config.url))){
+            return config;
         }
 
-        if (token) {
+        if (!config.headers.Authorization && token) {
             config.headers.Authorization = token;
         }
         return config;
@@ -57,8 +59,11 @@ instance.interceptors.request.use(
 
 // 添加登录跳转函数（根据您的项目结构选择合适的方式）
 const redirectToLogin = () => {
-    message.error('请先登录');
-    window.location.href = '/login';
+    useTokenStore.getState().clearToken();
+    message.error('请先登录', 600);
+    setTimeout(() => {
+        window.location.href = '/login';
+    }, 1000);
 };
 
 const tiandituKey = '4267820f43926eaf808d61dc07269beb';

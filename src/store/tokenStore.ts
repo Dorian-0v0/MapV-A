@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware'; // 引入持久
 const useTokenStore = create(
   persist(
     (set) => ({
-      token: "",
+      token: "dfefgeg",
       updateToken: (newToken: string) => {
         set({ token: newToken });
       },

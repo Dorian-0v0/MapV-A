@@ -4,7 +4,7 @@ export const inverseGeoService = async (location) => {
     const { longitude, latitude } = location;
     console.log("逆地理编码服务参数：", location);
 // http://api.tianditu.gov.cn/geocoder
-        const response = await instance.get("/geocoder", {
+        const response = await instance.get("http://api.tianditu.gov.cn/geocoder", {
             params: {
                 postStr: JSON.stringify({
                     lon: longitude,

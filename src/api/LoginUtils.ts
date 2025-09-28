@@ -5,8 +5,7 @@ interface account{
     remember?: boolean
 }
 export const loginUtilService = async (account: account) => {
-
-        const response = await axios.post(`http://api.tianditu.gov.cn/geocoder`, account);
+        const response = await axios.post("\login", account);
         console.log("响应数据：", response);
         if (response.data.status === "0") {
             const { addressComponent } = response.data.result;
