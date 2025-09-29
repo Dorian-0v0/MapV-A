@@ -51,6 +51,9 @@ const MapController = ({ isChanged }) => {
             case "openGeoAi":
                 eventBus.emit('openGeoAi')
                 break
+            case "OpenLayerEdit":
+                eventBus.emit('OpenLayerEdit')
+                break
         }
     }
 
@@ -82,8 +85,11 @@ const MapController = ({ isChanged }) => {
                 </button>
 
                 <button
+                    onClick={() => {
+                        eventBusFun('OpenLayerEdit')
+                    }}
                     className='geoscene-icon-cursor-marquee'
-                    title="图形绘制">
+                    title="图形绘制与编辑">
                 </button>
 
                 <button
