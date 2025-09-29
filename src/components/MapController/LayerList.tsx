@@ -1,6 +1,6 @@
 import useMapStore from '@/store/mapStore';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { List, Switch, Button, Modal, Tabs, Table, Descriptions, Dropdown, Menu } from 'antd';
+import { List, Button, Modal, Tabs, Table, Descriptions, Dropdown, Menu } from 'antd';
 import { EyeOutlined, EyeInvisibleOutlined, InfoCircleOutlined, TableOutlined, DeleteOutlined, FullscreenExitOutlined, MoreOutlined, ProfileOutlined, BgColorsOutlined, EditOutlined, ExportOutlined } from '@ant-design/icons';
 import Legend from '@geoscene/core/widgets/Legend';
 import { eventBus } from '@/utils/eventBus'
@@ -87,7 +87,6 @@ export default function LayerList() {
         } else {
             const legendElement = document.getElementById(`${layer.id}-legend`);
             if (legendElement) {
-                // legendElement.style.height = '0';
                 legendElement.innerHTML = '';
             }
 
