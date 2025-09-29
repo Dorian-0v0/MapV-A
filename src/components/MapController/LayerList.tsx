@@ -1,6 +1,6 @@
 import useMapStore from '@/store/mapStore';
-import React, { useEffect, useState } from 'react';
-import { List, Switch, Button, Card, Collapse, message, Modal, Tabs, Table, Descriptions, Dropdown, Menu } from 'antd';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { List, Switch, Button, Modal, Tabs, Table, Descriptions, Dropdown, Menu } from 'antd';
 import { EyeOutlined, EyeInvisibleOutlined, InfoCircleOutlined, TableOutlined, DeleteOutlined, FullscreenExitOutlined, MoreOutlined, ProfileOutlined, BgColorsOutlined, EditOutlined, ExportOutlined } from '@ant-design/icons';
 import Legend from '@geoscene/core/widgets/Legend';
 import { eventBus } from '@/utils/eventBus'
@@ -17,7 +17,6 @@ interface LayerInfo {
 export default function LayerList() {
     const { map, mapView } = useMapStore();
     const [layers, setLayers] = useState<LayerInfo[]>([]);
-    const [activeKey, setActiveKey] = useState<string | string[]>([]);
     const [layersChange, setLayersChange] = useState(false);
     const [selectLayer, setSelectLayer] = useState(null);
     useEffect(() => {
@@ -27,24 +26,25 @@ export default function LayerList() {
             setLayers(prevLayers => [...prevLayers, ...(map.layers?._items)]);
 
         })
-
-        // dataSource={layers.filter(item => item?.type !== 'graphics')}
-        map.layers?._items.forEach((ly) => {
-            console.log("移除所有测量", ly);
-            if (ly.type == "graphics" || ly.title == null) {
-                map.remove(ly);
-                setLayersChange(prev => !prev)
-            }
-        })
     }, []);
 
     // 初始化获取所有图层
-    useEffect(() => {
+    useLayoutEffect(() => {
         // if(!layersChange)return
         // const allLayers = map.layers?._items
         console.log("allLayers·················", map.layers?._items);
 
-        setLayers(map.layers?._items);
+        const filteredLayers = map.layers?._items.filter((ly) => {
+            console.log("处理图层", ly);
+
+            // 如果你的条件是要保留的图层
+            if (ly.type !== "graphics" && ly.title != null) {
+                return true; // 保留这个图层
+            }
+            return false; // 过滤掉这个图层
+        });
+
+        setLayers(filteredLayers);
 
     }, [map.layers?.length, layersChange]);
 
@@ -81,16 +81,16 @@ export default function LayerList() {
             });
             const legendElement = document.getElementById(`${layer.id}-legend`);
             if (legendElement) {
-                legendElement.style.height = '200px';
+                legendElement.style.maxHeight = '140px';
             }
 
         } else {
-              const legendElement = document.getElementById(`${layer.id}-legend`);
+            const legendElement = document.getElementById(`${layer.id}-legend`);
             if (legendElement) {
-                legendElement.style.height = '0';
+                // legendElement.style.height = '0';
                 legendElement.innerHTML = '';
             }
-          
+
         }
 
     };
@@ -130,13 +130,13 @@ export default function LayerList() {
             <List
                 dataSource={layers}
                 renderItem={(layer) => (
-                    <List.Item key={layer.id}>
+                    <List.Item key={layer.id} style={{ padding: "0px 0px", margin: "2px 0px" }}>
                         <div style={{
                             display: 'flex',
                             flexDirection: 'column', // 改为垂直排列
                             fontSize: 11,
                             border: '1px solid #ccc',
-                            padding: '5px 2px',
+                            padding: '0px 2px',
                             width: '100%',
                             background: '#eaeef6ff',
                             fontWeight: 'bold'

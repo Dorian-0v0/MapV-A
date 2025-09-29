@@ -27,11 +27,9 @@ const MeasurePanel = () => {
         eventBus.on('close-measure-area', () => {
             setDistanceMeasurement(prev => {
                 prev?.clear();
-                // return null;
             });
             setAreaMeasurement(prev => {
                 prev?.clear();
-                // return null;
             });
 
         });

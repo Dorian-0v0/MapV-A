@@ -267,11 +267,18 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
         });
 
         return () => {
+            // 移除
             console.log("地图销毁", mapView);
-
+            map.layers?._items.forEach((ly) => {
+                console.log("移除所有测量", ly);
+                if (ly.type == "graphics" || ly.title == null) {
+                    map.remove(ly);
+                }
+            })
             const center = [mapView?.center.longitude, mapView?.center.latitude] as [number, number];
             const zoom = mapView?.zoom;
             updateViewState(center, zoom);
+            eventBus.removeAllListeners();
             if (mapDivRef) {
                 console.log("地图销毁");
             }
