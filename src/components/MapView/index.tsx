@@ -105,35 +105,35 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                     console.log("OpenLayerEdit");
                     const graphicsLayer = new GraphicsLayer({ title: "graphicsLayer" })
 
-                    const coordArr = [
-                        [103.164036, 33.087548],
-                        [104.596743, 27.652101],
-                        [116.0584, 33.087548],
-                    ]
+                    // const coordArr = [
+                    //     [103.164036, 33.087548],
+                    //     [104.596743, 27.652101],
+                    //     [116.0584, 33.087548],
+                    // ]
 
-                    let pointsGraphic = []
+                    // let pointsGraphic = []
 
-                    coordArr.forEach((coord) => {
-                        pointsGraphic.push(new Graphic({
-                            geometry: {
-                                type: "point",
-                                longitude: coord[0],
-                                latitude: coord[1]
-                            },
-                            symbol: {
-                                type: "simple-marker",
-                                style: "square",
-                                color: "red",
-                                size: "18px",
-                                outline: {
-                                    color: [255, 255, 0],
-                                    width: 3
-                                }
-                            }
-                        }))
-                    })
+                    // coordArr.forEach((coord) => {
+                    //     pointsGraphic.push(new Graphic({
+                    //         geometry: {
+                    //             type: "point",
+                    //             longitude: coord[0],
+                    //             latitude: coord[1]
+                    //         },
+                    //         symbol: {
+                    //             type: "simple-marker",
+                    //             style: "square",
+                    //             color: "red",
+                    //             size: "18px",
+                    //             outline: {
+                    //                 color: [255, 255, 0],
+                    //                 width: 3
+                    //             }
+                    //         }
+                    //     }))
+                    // })
 
-                    graphicsLayer.addMany(pointsGraphic)
+                    mapView.map.add(graphicsLayer)
 
                     const sketch = new Sketch({
                         layer: graphicsLayer,
@@ -142,6 +142,8 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                         defaultCreateOptions: {
                             mode: 'hybrid' // click(点击) | freehand(自由) | hybrid(混合)
                         },
+
+
                         visibleElements: {
                             // createTools: { // 创建工具
                             //   point: false, // 点
@@ -172,6 +174,44 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                                 break
                             case "complete":
                                 console.log("创建结束")
+                                if (event.state === "complete") {
+                                    const graphic = event.graphic;
+
+                                    // 根据几何类型设置不同样式
+                                    switch (graphic.geometry.type) {
+                                        case "point":
+                                            graphic.symbol = {
+                                                type: "simple-marker",
+                                                style: "circle",
+                                                color: [51, 51, 204, 0.9],
+                                                size: "16px",
+                                                outline: {
+                                                    color: [255, 255, 255],
+                                                    width: 2
+                                                }
+                                            };
+                                            break;
+                                        case "polyline":
+                                            graphic.symbol = {
+                                                type: "simple-line",
+                                                color: "dodgerblue",
+                                                width: 3,
+                                                style: "solid"
+                                            };
+                                            break;
+                                        case "polygon":
+                                            graphic.symbol = {
+                                                type: "simple-fill",
+                                                color: [51, 51, 204, 0.5],
+                                                style: "solid",
+                                                outline: {
+                                                    color: [255, 255, 255],
+                                                    width: 1.5
+                                                }
+                                            };
+                                            break;
+                                    }
+                                }
                                 break
                             default:
                                 console.log("创建取消")
