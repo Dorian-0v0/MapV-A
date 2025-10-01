@@ -3,14 +3,18 @@ import MapViewCom from "@/components/MapView"
 
 import { Layout } from "antd"
 import Sider from "antd/es/layout/Sider"
-import { useState } from "react"
-import GeoJSONLayer from '@geoscene/core/layers/GeoJSONLayer';
-import useMapStore from "@/store/mapStore"
+import { useEffect, useState } from "react"
+import { eventBus } from "@/utils/eventBus"
 const MapWork = () => {
   
     const [collapsed, setCollapsed] = useState(false)
     // const [isChanged, setIsChanged] = useState(false)
 
+    useEffect(() => {
+        return () => {
+             eventBus.removeAllListeners();
+        }
+    }, [])
     
 
     return (

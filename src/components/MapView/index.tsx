@@ -20,7 +20,6 @@ import { message } from 'antd';
 import Legend from "@geoscene/core/widgets/Legend.js";
 import MeasurePanel from './MeasurePanel';
 import GraphicsLayer from "@geoscene/core/layers/GraphicsLayer"
-import Graphic from "@geoscene/core/Graphic"
 interface MapViewProps {
     type?: string;
 }
@@ -101,182 +100,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                     mapView.goTo(extent);
                 })
                 // 图层编辑
-                eventBus.on('OpenLayerEdit', () => {
-                    console.log("OpenLayerEdit");
-                    const graphicsLayer = new GraphicsLayer({ title: "graphicsLayer" })
-
-                    // const coordArr = [
-                    //     [103.164036, 33.087548],
-                    //     [104.596743, 27.652101],
-                    //     [116.0584, 33.087548],
-                    // ]
-
-                    // let pointsGraphic = []
-
-                    // coordArr.forEach((coord) => {
-                    //     pointsGraphic.push(new Graphic({
-                    //         geometry: {
-                    //             type: "point",
-                    //             longitude: coord[0],
-                    //             latitude: coord[1]
-                    //         },
-                    //         symbol: {
-                    //             type: "simple-marker",
-                    //             style: "square",
-                    //             color: "red",
-                    //             size: "18px",
-                    //             outline: {
-                    //                 color: [255, 255, 0],
-                    //                 width: 3
-                    //             }
-                    //         }
-                    //     }))
-                    // })
-
-                    mapView.map.add(graphicsLayer)
-
-                    const sketch = new Sketch({
-                        layer: graphicsLayer,
-                        view: mapView,
-                        // creationMode: "update", // 创建模式
-                        defaultCreateOptions: {
-                            mode: 'hybrid' // click(点击) | freehand(自由) | hybrid(混合)
-                        },
-
-
-                        visibleElements: {
-                            // createTools: { // 创建工具
-                            //   point: false, // 点
-                            //   polyline: false, // 折线
-                            //   polygon: true, // 多边形
-                            //   rectangle: false, // 矩形
-                            //   circle: false, // 圆形
-                            // },
-                            // selectionTools: { // 选择工具
-                            //   "rectangle-selection": false, // 矩形框选
-                            //   "lasso-selection": false, // 套索选择
-                            // },
-                            undoRedoMenu: true, // 重做按钮
-                            settingsMenu: false, // 设置按钮
-                        },
-                    })
-
-                    mapView.ui.add(sketch, "top-right")
-
-                    // 创建事件
-                    sketch.on("create", (event) => {
-                        switch (event.state) { // start | active | complete | cancel
-                            case "start":
-                                console.log("创建开始")
-                                break
-                            case "active":
-                                console.log("创建中...")
-                                break
-                            case "complete":
-                                console.log("创建结束")
-                                if (event.state === "complete") {
-                                    const graphic = event.graphic;
-
-                                    // 根据几何类型设置不同样式
-                                    switch (graphic.geometry.type) {
-                                        case "point":
-                                            graphic.symbol = {
-                                                type: "simple-marker",
-                                                style: "circle",
-                                                color: [51, 51, 204, 0.9],
-                                                size: "16px",
-                                                outline: {
-                                                    color: [255, 255, 255],
-                                                    width: 2
-                                                }
-                                            };
-                                            break;
-                                        case "polyline":
-                                            graphic.symbol = {
-                                                type: "simple-line",
-                                                color: "dodgerblue",
-                                                width: 3,
-                                                style: "solid"
-                                            };
-                                            break;
-                                        case "polygon":
-                                            graphic.symbol = {
-                                                type: "simple-fill",
-                                                color: [51, 51, 204, 0.5],
-                                                style: "solid",
-                                                outline: {
-                                                    color: [255, 255, 255],
-                                                    width: 1.5
-                                                }
-                                            };
-                                            break;
-                                    }
-                                }
-                                break
-                            default:
-                                console.log("创建取消")
-                        }
-                    })
-
-                    // 重做事件
-                    sketch.on("redo", (event) => {
-                        if (event.type === "redo") {
-                            console.log("redo")
-                        }
-                    })
-
-                    // 撤消
-                    sketch.on("undo", (event) => {
-                        if (event.type === "undo") {
-                            console.log("undo")
-                        }
-                    })
-
-                    // 删除事件
-                    sketch.on("delete", (event) => {
-                        if (event.type === 'delete') {
-                            console.log("删除结束")
-                        }
-                    })
-
-                    // 更新事件
-                    sketch.on("update", (event) => {
-                        if (event.aborted) { // 取消操作，一般按下 ESC 触发触发
-                            return
-                        }
-                        switch (event.state) { // start | active | complete
-                            case "start":
-                                console.log("更新开始")
-                                break
-                            case "active":
-                                console.log("更新中...")
-                                break
-                            default:
-                                console.log("更新结束")
-                        }
-                        switch (event.toolEventInfo && event.toolEventInfo.type) {
-                            case "reshape-stop":
-                                console.log("修改形状结束")
-                                break
-                            case "move-stop":
-                                console.log("移动结束")
-                                break
-                            case "scale-stop":
-                                console.log("缩放结束")
-                                break
-                            case "rotate-stop":
-                                console.log("旋转结束")
-                                break
-                            case "vertex-add":
-                                console.log("添加控制点")
-                                break
-                            case "vertex-remove": // 右键移除
-                                console.log("移除控制点")
-                                break
-                        }
-                    })
-
-                })
+              
 
 
                 // 获取天气
@@ -318,7 +142,6 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
             const center = [mapView?.center.longitude, mapView?.center.latitude] as [number, number];
             const zoom = mapView?.zoom;
             updateViewState(center, zoom);
-            eventBus.removeAllListeners();
             if (mapDivRef) {
                 console.log("地图销毁");
             }
