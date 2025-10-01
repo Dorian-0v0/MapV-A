@@ -64437,7 +64437,7 @@ const useMapStore = create((set) => ({
   }),
   mapView : null,
   view: {
-    center: [116.805, 28.027], // 经度, 纬度
+    center: [116.805, 34.567], // 经度, 纬度
     zoom: 4,
   },
 

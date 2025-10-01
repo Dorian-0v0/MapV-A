@@ -75,184 +75,91 @@ pnpm run test
 - [快速上手 - SiliconFlow](https://docs.siliconflow.cn/cn/userguide/quickstart)
 - [Agent  学习  哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1g4E4zsEoY/?spm_id_from=333.788.player.switch&vd_source=3c46a0d84476a55380be0c2ddd012af1&p=2)
 
-## 📅 前端开发日志
+## 🗳 数据库设计
 
-### 📆 2025-07-25
-##### ✅ **已完成**  
-- 基础底图加载功能  
-- 高德地图与天地图底图切换  
+user表：昵称（nickname）、账号（username）、密码（password）、工作单位（work_unit）、个人简介、默认底图URL(base_map_url)、默认底图名称(base_map_name)、中心点(center)、缩放大小(zoom)、头像(avatar)
 
----
+```sql
+CREATE TABLE users (
+    -- 主键标识
+    id BIGSERIAL PRIMARY KEY,
+    
+    -- 用户身份信息
+    nickname VARCHAR(50) NOT NULL,
+    username VARCHAR(20) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL, -- 增加长度以容纳加密密码
+    
+    -- 职业信息
+    work_unit VARCHAR(100),
+    email VARCHAR(100) NOT NULL, -- 标准邮箱长度
+    
+    -- 个人介绍
+    personal_intro TEXT, -- 改为TEXT类型支持更长内容
+    
+    -- 地图相关偏好设置
+    base_map_url VARCHAR(500),
+    base_map_name VARCHAR(50), -- 增加长度
+    center_x DECIMAL(10, 7) DEFAULT 116.805, -- 修正为北京经度，增加精度
+    center_y DECIMAL(10, 7) DEFAULT 34.567, -- 修正为北京纬度
+    zoom SMALLINT DEFAULT 4,
+    
+    -- 头像信息
+    avatar VARCHAR(500),
+    
+    -- 系统管理字段
+    status SMALLINT DEFAULT 1,
+    is_deleted BOOLEAN DEFAULT FALSE, -- 添加缺失字段
+    
+    -- 时间戳字段
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- 约束条件
+    CONSTRAINT chk_status CHECK (status IN (0, 1, 2)),
+    CONSTRAINT chk_zoom_range CHECK (zoom >= 0 AND zoom <= 20),
+);
 
-### 📆 2025-07-26
-##### ✅ **已完成**  
-- 昼夜模式切换（通过双层滤镜实现夜间图片显示优化）  
-- 地图工作台配置组件  
-- 用户信息组件  
-- 项目介绍组件  
+-- 创建索引优化查询性能
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_status ON users(status);
+CREATE INDEX idx_users_is_deleted ON users(is_deleted);
+CREATE INDEX idx_users_created_at ON users(created_at);
 
----
+-- 注释
+COMMENT ON TABLE users IS '系统用户表，存储用户基本信息、地图偏好设置和认证信息';
+COMMENT ON COLUMN users.id IS '用户唯一标识符，自增主键';
+COMMENT ON COLUMN users.nickname IS '用户昵称，用于显示，最大长度50字符';
+COMMENT ON COLUMN users.username IS '登录账号，必须唯一，最大长度100字符';
+COMMENT ON COLUMN users.password IS '加密后的密码，建议使用bcrypt等强加密方式';
+COMMENT ON COLUMN users.work_unit IS '工作单位信息，可选字段';
+COMMENT ON COLUMN users.personal_intro IS '个人简介，支持长文本内容';
+COMMENT ON COLUMN users.base_map_url IS '默认底图URL地址，用于个性化地图显示';
+COMMENT ON COLUMN users.base_map_name IS '默认底图名称，如"天地图"、"谷歌卫星图"等';
+COMMENT ON COLUMN users.center_x IS '地图中心点X坐标（经度），默认北京经度';
+COMMENT ON COLUMN users.center_y IS '地图中心点Y坐标（纬度），默认北京纬度';
+COMMENT ON COLUMN users.zoom IS '地图缩放级别，默认10级，范围0-20';
+COMMENT ON COLUMN users.avatar IS '头像图片URL地址，支持本地路径或网络地址';
+COMMENT ON COLUMN users.email IS '电子邮箱，用于找回密码等操作';
+COMMENT ON COLUMN users.status IS '用户状态：0-禁用，1-正常，2-未激活';
+COMMENT ON COLUMN users.is_deleted IS '软删除标记：true-已删除，false-正常';
+COMMENT ON COLUMN users.created_at IS '记录创建时间';
+COMMENT ON COLUMN users.updated_at IS '记录最后更新时间';
 
-### 📆 2025-07-27
-##### ✅ **已完成**  
-- 使用 Zustand 管理地图状态  
-- 路由切换时自动加载地图状态 
-- 地图table的显示
-- readme文件在项目里显示
 
-##### 🚧 **进行中**
-- 调试工具点击跳转并不精确
-- 习惯一下vim写代码
-##### 🔄 **待完成**
-- Ai聊天界面
-- 用户设置 - 地图选范围
-- 登录界面
-- 注册界面
-- 后端开始 - 前端集成后端
-- 测量功能 
-- 导航栏跳转
-##### 🔍 **思考**
-- 具体要实现什么功能
+-- 创建更新updated_at字段的函数
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
 
----
-
-### 📆 2025-07-28
-##### ✅ **已完成**  
-- 加载点图层，whenLayerView方法
-- 要素图层加载（每天上班要写到GA项目里）
-  
-```JavaScript
-    const QueryBySql1 = () => {
-        console.log("所有字段信息为：", layers[1].fields.slice(1).map(field => field.name));
-        const query = layers[1].createQuery();
-        query.where = "矿产地名称 LIKE '%金矿%'"; // 只用于查询出具体的结果，不会返回到地图上
-                /**
-        * 配置统计分析参数
-        * @param statisticType 统计类型，此处设置为"count"表示进行计数统计
-        * @param onStatisticField 用于统计的字段名称
-        * @param outStatisticFieldName 输出统计结果的字段名称，此处固定为"count"
-        */
-        query.outStatistics = [{
-            statisticType: "count",
-            onStatisticField: '矿产地名称',
-            outStatisticFieldName: "count"
-        }];
-        query.groupByFieldsForStatistics = ['矿产地名称'];
-        layers[1].queryFeatures(query).then(function (result) {
-            const values = result.features.map(feature => feature.attributes['矿产地名称']);
-            console.log('字有唯一值:', values);
-        });
-        layers[1].definitionExpression = "规模 = '小型'";  // definitionExpression = ''   会直接将查询结果返回到layer上
-    };
+-- 创建触发器：在更新数据时自动更新updated_at字段
+CREATE TRIGGER update_users_updated_at
+    BEFORE UPDATE ON users
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
 ```
-##### 🚧 **进行中**
 
-##### 🔄 **待完成**
-- 添加图层过滤、字段表
-
-##### 🔍 **思考**
-
----
-
-### 📆 2025-07-29
-##### ✅ **已完成**  
-- 底部视图实时状态
-- 登录页面
-- 控制台按钮排版
-- 
-##### 🚧 **进行中**
-
-##### 🔄 **待完成**
-- 定位相关bug
-
-##### 🔍 **思考**
-
----
-
-### 📆 2025-07-30
-##### ✅ **已完成**  
-- 逆地理编码
-##### 🚧 **进行中**
-
-##### 🔄 **待完成**
-
-##### 🔍 **思考**
-
----
-
-### 📆 2025-07-31
-##### ✅ **已完成**  
-- 条件过滤
-
-##### 🚧 **进行中**
-
-##### 🔄 **待完成**
-
-##### 🔍 **思考**
-- 存在bug：切换图层的时候语句会错乱
-
----
-
-### 📆 2025-08-01
-##### ✅ **已完成**  
-- ArcGIS图层挺好看的
-##### 🚧 **进行中**
-
-##### 🔄 **待完成**
-
-##### 🔍 **思考**
-
----
-
-### 📆 2025-08-02
-##### ✅ **已完成**  
-- 优化逆地理编码逻辑，侧边栏收缩
-##### 🚧 **进行中**
-
-##### 🔄 **待完成**
-
-##### 🔍 **思考**
-
----
-
-### 📆 2025-08-11
-- 添加图层
-  - 支持WebURL的方式（geojson、Esri等）
-    - 从 Arcgis restfil api 创建一个新图层实例。根据 URL，返回的图层类型可能是 FeatureLayer、TileLayer、MapImageLayer、ImageryLayer、ImageryTileLayer、SceneLayer、StreamLayer、IntegratedMeshLayer、IntegratedMesh3DTilesLayer、PointCloudLayer、BuildingSceneLayer、ElevationLayer 或 GroupLayer。
-    参考[fromGeoSceneServerUrl](https://doc.geoscene.cn/javascript/4.29/api-reference/geoscene-layers-Layer.html#fromGeoSceneServerUrl) 
-    - 支持Geojson 数据源
-    - OGC WFS 数据源
-    - OGC WMS 数据源
-    - OGC WMTS 数据源
-  - 支持文件添加
-    - shp文件
-    - geojson文件
-    - csv
-    - tif
-    - csv
-    - gdb
-    - gbk
----
-
-### 📆 2025-07-27
-##### ✅ **已完成**  
-
-##### 🚧 **进行中**
-
-##### 🔄 **待完成**
-
-##### 🔍 **思考**
-
----
-
-
-
-✅ **已完成**
-
-🚧 **进行中**
-
-❌ **未完成**
-
-⏸️ **已暂停**
-
-🔍 **待思考**
