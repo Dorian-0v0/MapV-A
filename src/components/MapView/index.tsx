@@ -9,8 +9,7 @@ import { weatherService } from '@/api/MapServer'
 import Home from "@geoscene/core/widgets/Home";
 import useMapStore from '@/store/mapStore'
 import { eventBus } from '@/utils/eventBus'
-import Editor from '@geoscene/core/widgets/Editor'
-import Sketch from '@geoscene/core/widgets/Sketch'
+
 import "./index.less"
 import BaseMapPanel from './BaseMapPanel';
 import MapBottom from '../MapBottom';
@@ -133,12 +132,14 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
         return () => {
             // 移除
             console.log("地图销毁", mapView);
+            // 移除所有控件
             map.layers?._items.forEach((ly) => {
                 console.log("移除所有测量", ly);
                 if (ly.type == "graphics" || ly.title == null) {
                     map.remove(ly);
                 }
             })
+            // mapView.ui.remove(["sketchId"]);
             const center = [mapView?.center.longitude, mapView?.center.latitude] as [number, number];
             const zoom = mapView?.zoom;
             updateViewState(center, zoom);

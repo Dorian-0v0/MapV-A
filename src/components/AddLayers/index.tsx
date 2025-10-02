@@ -10,7 +10,6 @@ import {
 } from '@ant-design/icons';
 import { eventBus } from '@/utils/eventBus'
 import Layer from "@geoscene/core/layers/Layer.js";
-import useMapStore from '@/store/mapStore';
 import GeoJSONLayer from "@geoscene/core/layers/GeoJSONLayer.js";
 import WFSLayer from "@geoscene/core/layers/WFSLayer.js";
 import WMSLayer from "@geoscene/core/layers/WMSLayer.js";
@@ -20,7 +19,6 @@ import SimpleRenderer from "@geoscene/core/renderers/SimpleRenderer.js";
 import { SimpleFillSymbol, SimpleLineSymbol } from '@geoscene/core/symbols.js';
 export default function AddLayers(props) {
   const { map } = props;
-  // const { updateMap, view, updateViewState, wmtsLayer } = useMapStore();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [webUrlForm] = Form.useForm(); // 创建表单实例

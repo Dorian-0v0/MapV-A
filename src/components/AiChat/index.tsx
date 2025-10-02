@@ -91,58 +91,6 @@ const AiChat = (props: any) => {
                 frameBorder={0}
                 allow="microphone">
             </iframe>
-            {/* <Flex vertical gap="middle">
-                <Bubble.List
-                    roles={roles}
-                    style={{ height: 360, width: 400 }}
-                    items={messages.map(({ id, message, status }) => ({
-                        key: id,
-                        loading: status === 'loading',
-                        role: status === 'local' ? 'local' : 'ai',
-                        content: message,
-                    }))}
-                />
-                <Sender
-            
-                    value={value}
-                    onChange={setValue}
-                    autoSize={{ minRows: 2, maxRows: 6 }}
-                    placeholder="Press Enter to send message"
-                    footer={({ components }) => {
-                        const { SendButton, LoadingButton, SpeechButton } = components;
-                        return (
-                            <Flex justify="space-between" align="center">
-                                <Flex gap="small" align="center">
-                                    <Button style={iconStyle} type="text" icon={<LinkOutlined />} />
-                                    <Divider type="vertical" />
-                                    Deep Thinking
-                                    <Switch size="small" />
-                                    <Divider type="vertical" />
-                                    <Button icon={<SearchOutlined />}>Global Search</Button>
-                                </Flex>
-                                <Flex align="center">
-                                    <Button type="text" style={iconStyle} icon={<ApiOutlined />} />
-                                    <Divider type="vertical" />
-                                    <SpeechButton style={iconStyle} />
-                                    <Divider type="vertical" />
-                                    {loading ? (
-                                        <LoadingButton type="default" />
-                                    ) : (
-                                        <SendButton type="primary" disabled={false} />
-                                    )}
-                                </Flex>
-                            </Flex>
-                        );
-                    }}
-                    onSubmit={() => {
-                        setLoading(true);
-                    }}
-                    onCancel={() => {
-                        setLoading(false);
-                    }}
-                    actions={false}
-                />
-            </Flex> */}
         </DraggableModal >
     )
 

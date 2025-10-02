@@ -5,9 +5,9 @@ import Draggable from 'react-draggable';
 
 interface DraggableModalProps {
   /** 是否显示模态框 */
-  visible: boolean;
+  visible?: boolean;
   /** 控制模态框显示状态的函数 */
-  onClose: () => void;
+  onClose?: () => void;
   /** 模态框宽度 */
   maxWidth?: number;
   /** 模态框高度 */
@@ -27,30 +27,33 @@ interface DraggableModalProps {
   /** 拖拽边界选择器 */
   bounds?: string;
   handleSelector?: string;
+  idRef?: string
 }
 
 const DraggableModal: React.FC<DraggableModalProps> = ({
   visible,
   onClose,
-  maxWidth = 1000,
+  maxWidth = 700,
   maxHeight = 800,
-  defaultPosition = { x: 250, y: 300 },
+  defaultPosition = { x: 500, y: 10 },
   title = '',
   style,
   headerStyle,
   bodyStyle,
   children,
   bounds = '#root',
-  handleSelector = '.drag-handle'
+  handleSelector = '.drag-handle',
+  idRef,
 }) => {
-  if (!visible) return null;
+  // if (!visible) return null;
 
-  return (
+  return (visible ? (
     <Draggable
       defaultPosition={defaultPosition}
       bounds={bounds}
       handle={handleSelector}
     >
+
       <div
         style={{
           backgroundColor: 'white',
@@ -58,6 +61,7 @@ const DraggableModal: React.FC<DraggableModalProps> = ({
           borderRadius: 8,
           overflow: 'hidden',
           border: '2px solid #c6c4c4ff',
+          zIndex: 2,
           ...style
         }}
       >
@@ -89,6 +93,7 @@ const DraggableModal: React.FC<DraggableModalProps> = ({
 
         {/* 内容区域 */}
         <div
+          id="modal-content"
           style={{
             maxHeight,
             maxWidth,
@@ -99,7 +104,7 @@ const DraggableModal: React.FC<DraggableModalProps> = ({
         >
           {children}
         </div>
-         <div
+        <div
           className="drag-handle"
           style={{
             backgroundColor: '#f0f0f0',
@@ -114,7 +119,7 @@ const DraggableModal: React.FC<DraggableModalProps> = ({
         </div>
       </div>
     </Draggable>
-  );
+  ) : null);
 };
 
 export default DraggableModal;

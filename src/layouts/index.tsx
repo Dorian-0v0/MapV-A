@@ -11,19 +11,14 @@ import { AvatarIcon, GeoSceneMapIcon, LoGoIcon } from '@/assets/icons';
 import { Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { eventBus } from '@/utils/eventBus';
-import AiChat from '@/components/AiChat';
 
 const { Header } = Layout;
 
 const LayOut = () => {
-  const [isAIModalVisible, setAIModalVisible] = useState(false); // AI对话框可见状态
+
   const [isDarkMode, setIsDarkMode] = useState(false); // 切换暗黑模式
   const navigate = useNavigate();
-  useEffect(() => {
-    eventBus.on('openGeoAi', () => {
-      setAIModalVisible(true);
-    });
-  }, []);
+ 
 
 
   const changeGlobalStyle = () => {
@@ -125,10 +120,6 @@ const LayOut = () => {
           </Dropdown>
         </div>
 
-        <AiChat
-        isAIModalVisible={isAIModalVisible}
-        setAIModalVisible={setAIModalVisible}
-        ></AiChat>
      
 
       </Header>
