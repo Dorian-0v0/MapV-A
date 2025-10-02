@@ -1,4 +1,4 @@
-import useMapStore from '@/store/mapStore';
+import useMapStore, { useMap } from '@/store/mapStore';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { List, Button, Modal, Tabs, Table, Descriptions, Dropdown, Menu } from 'antd';
 import { EyeOutlined, EyeInvisibleOutlined, InfoCircleOutlined, TableOutlined, DeleteOutlined, FullscreenExitOutlined, MoreOutlined, ProfileOutlined, BgColorsOutlined, EditOutlined, ExportOutlined } from '@ant-design/icons';
@@ -15,7 +15,11 @@ interface LayerInfo {
 }
 
 export default function LayerList() {
-    const { map, mapView } = useMapStore();
+    const {
+        map,
+        mapView,
+    } = useMap();
+    // const { map, mapView } = useMapStore();
     const [layers, setLayers] = useState<LayerInfo[]>([]);
     const [layersChange, setLayersChange] = useState(false);
     const [selectLayer, setSelectLayer] = useState(null);

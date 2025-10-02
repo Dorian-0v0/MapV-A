@@ -6,10 +6,11 @@ import { useEffect, useRef, useState } from 'react';
 import AreaMeasurement2D from '@geoscene/core/widgets/AreaMeasurement2D';
 import DistanceMeasurement2D from '@geoscene/core/widgets/DistanceMeasurement2D';
 import Measurement from '@geoscene/core/widgets/Measurement';
-import useMapStore from '@/store/mapStore';
+import useMapStore, { useMap } from '@/store/mapStore';
 const MeasurePanel = () => {
     const [isBaseMapVisible, setIsBaseMapVisible] = useState(false);
-    const { mapView, map } = useMapStore();
+    // const { mapView, map } = useMapStore();
+    const { mapView, map } = useMap();
     const [activeKey, setActiveKey] = useState('1');
 
     const [areaMeasurement, setAreaMeasurement] = useState<any>(null);

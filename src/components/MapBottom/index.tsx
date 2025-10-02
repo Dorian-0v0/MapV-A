@@ -7,7 +7,7 @@ import "./index.less"
 import { Button, notification, Switch, Tooltip } from 'antd';
 import { EnvironmentOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { GaodeIcon } from '@/assets/icons';
-import useMapStore from '@/store/mapStore';
+import { useMap } from '@/store/mapStore';
 
 // 定义 props 类型
 interface MapBottomProps {
@@ -28,7 +28,11 @@ const MapBottom: React.FC<MapBottomProps> = ({ view, baseMapName }) => {
     const [enCodeGeoOpen, setEnCodeGeoOpen] = useState(false);
     // 保存事件处理器的引用
     const [geoCodeClickHandler, setGeoCodeClickHandler] = useState();
-    const { map } = useMapStore()
+    // const { map } = useMapStore()
+    const {
+        map
+    } = useMap();
+
     // 获取天气情况
 
     // 定义右下角通知

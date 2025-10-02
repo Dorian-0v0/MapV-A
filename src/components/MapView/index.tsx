@@ -7,7 +7,7 @@ import Basemap from "@geoscene/core/Basemap";
 import ScaleBar from '@geoscene/core/widgets/ScaleBar'
 import { weatherService } from '@/api/MapServer'
 import Home from "@geoscene/core/widgets/Home";
-import useMapStore from '@/store/mapStore'
+import useMapStore, { useMap } from '@/store/mapStore'
 import { eventBus } from '@/utils/eventBus'
 
 import "./index.less"
@@ -25,7 +25,10 @@ interface MapViewProps {
 
 const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
     const mapDivRef = useRef<HTMLDivElement>(null);
-    const { map, updateViewState, updateMapState, wmtsLayer, view, updateMapViewState } = useMapStore();
+    const {
+        map, updateViewState, updateMapState, wmtsLayer, view, updateMapViewState
+    } = useMap();
+    // const { } = useMapStore();
 
     // 新增状态：追踪地图是否加载完成
     const [isMapReady, setIsMapReady] = useState(false);
@@ -99,7 +102,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                     mapView.goTo(extent);
                 })
                 // 图层编辑
-              
+
 
 
                 // 获取天气
@@ -127,6 +130,8 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
             updateMapViewState(mapView)
             updateMapState(map)
 
+
+
         });
 
         return () => {
@@ -139,10 +144,13 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                     map.remove(ly);
                 }
             })
-            // mapView.ui.remove(["sketchId"]);
             const center = [mapView?.center.longitude, mapView?.center.latitude] as [number, number];
             const zoom = mapView?.zoom;
+            console.log("地图销毁", center, zoom);
+
             updateViewState(center, zoom);
+            // mapView.ui.remove(["sketchId"]);
+
             if (mapDivRef) {
                 console.log("地图销毁");
             }
