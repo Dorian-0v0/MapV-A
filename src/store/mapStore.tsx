@@ -3,7 +3,7 @@ import React, { createContext, useContext, useReducer } from 'react';
 import Basemap from '@geoscene/core/Basemap';
 import WebTileLayer from '@geoscene/core/layers/WebTileLayer';
 import Map from '@geoscene/core/Map';
-
+import * as turf from '@turf/turf';
 // 初始化天地图
 const tiandituVector = Basemap.fromId("tianditu-vector");
 tiandituVector.thumbnailUrl = "./public/images/天地图矢量.png";
@@ -88,19 +88,19 @@ const mapReducer = (state, action) => {
           zoom: action.payload.zoom,
         },
       };
-    
+
     case ACTION_TYPES.UPDATE_MAP_VIEW_STATE:
       return {
         ...state,
         mapView: action.payload,
       };
-    
+
     case ACTION_TYPES.UPDATE_MAP_STATE:
       return {
         ...state,
         map: action.payload,
       };
-    
+
     case ACTION_TYPES.CHANGE_BASEMAP:
       return {
         ...state,
@@ -108,7 +108,7 @@ const mapReducer = (state, action) => {
           basemap: action.payload,
         }),
       };
-    
+
     default:
       return state;
   }
@@ -120,7 +120,7 @@ export const MapProvider = ({ children }) => {
 
   // Actions
   const updateViewState = (center, zoom) => {
-    
+
     console.log("updateViewState", center, zoom);
     dispatch({
       type: ACTION_TYPES.UPDATE_VIEW_STATE,
