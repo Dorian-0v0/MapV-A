@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Point from '@geoscene/core/geometry/Point'; // 补充 Point 的导入
 import type MapView from '@geoscene/core/views/MapView';
 import { inverseGeoService, weatherService } from '@/api/MapServer';
 import "./index.less"
 import { Button, notification, Switch, Tooltip } from 'antd';
-import { EnvironmentOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { GaodeIcon } from '@/assets/icons';
 import { useMap } from '@/store/mapStore';
 

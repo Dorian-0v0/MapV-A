@@ -54,12 +54,16 @@ export default function LayerList() {
 
     // 解析layer的名字
     const getLayerName = (item) => {
+        console.log("item解析layer的名字", item);
         const title = item.title;
         if (title?.[0] === '%') {
             const name = item?.sourceJSON?.name;
-            if (name !== undefined && name !== null) return name;
+            if (name !== undefined && name !== null) {
+                item.title = name;
+                return name;
+            }
             console.log("title", decodeURIComponent(title));
-
+            item.title = decodeURIComponent(title);
             return decodeURIComponent(title);
 
         }

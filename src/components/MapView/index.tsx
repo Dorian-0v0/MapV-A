@@ -28,7 +28,6 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
     const {
         map, updateViewState, updateMapState, wmtsLayer, view, updateMapViewState
     } = useMap();
-    // const { } = useMapStore();
 
     // 新增状态：追踪地图是否加载完成
     const [isMapReady, setIsMapReady] = useState(false);
@@ -83,6 +82,7 @@ const MapViewComponent: React.FC<MapViewProps> = ({ type }) => {
                     mapView.whenLayerView(layer).then(layerView => {
                         layer.popupTemplate = {
                             highlightEable: true,
+                            title: layer.title,
                             content: [{
                                 type: "fields",
                                 fieldInfos: (layer.fields || []).map(field => ({

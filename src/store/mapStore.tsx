@@ -1,5 +1,5 @@
 // mapContext.js
-import React, { createContext, useContext, useReducer, useRef } from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 import Basemap from '@geoscene/core/Basemap';
 import WebTileLayer from '@geoscene/core/layers/WebTileLayer';
 import Map from '@geoscene/core/Map';
@@ -78,7 +78,7 @@ const ACTION_TYPES = {
 
 // Reducer 函数
 const mapReducer = (state, action) => {
-  console.log("mapReducer", action);
+  console.log("mapReducer", action.type);
   switch (action.type) {
     case ACTION_TYPES.UPDATE_VIEW_STATE:
       return {
@@ -153,9 +153,7 @@ export const MapProvider = ({ children }) => {
   };
 
   const value = {
-    // State
     ...state,
-    // Actions
     updateViewState,
     updateMapViewState,
     updateMapState,
